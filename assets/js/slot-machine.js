@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   containers.forEach(container => {
+    const assetsBaseUrl = resolveAssetsBaseUrl();
     const btn = container.querySelector('.tmw-spin-btn');
     const reels = container.querySelectorAll('.reel');
     const result = container.querySelector('.tmw-result');
@@ -17,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let soundEnabled = (container.dataset.soundDefault || 'off') === 'on';
     let offers = [];
     let audioContext;
-    const winSound = new Audio((tmwSlot.assetsUrl || tmwSlot.url) + '/sounds/win.mp3');
+    const winSoundPath = assetsBaseUrl ? `${assetsBaseUrl}/sounds/win.mp3` : 'assets/sounds/win.mp3';
+    const winSound = new Audio(winSoundPath);
     let winSoundLoaded = false;
 
     winSound.preload = 'auto';
@@ -143,20 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     };
 
-    const startResultFlash = (onComplete) => {
+    const startResultFlash = (iconPool, onComplete) => {
       stopResultFlash();
 
-      const iconPool = (() => {
-        if (typeof tmwSlot !== 'undefined' && Array.isArray(tmwSlot.icons) && tmwSlot.icons.length) {
-          return tmwSlot.icons.filter(Boolean);
-        }
-        if (Array.isArray(tmwIcons)) {
-          return tmwIcons.filter(Boolean);
-        }
-        return [];
-      })();
+      const pool = Array.isArray(iconPool) ? iconPool.filter(Boolean) : getIconPool();
 
-      if (!reelList.length || !iconPool.length) {
+      if (!reelList.length || !pool.length) {
+        if (typeof onComplete === 'function') {
+          onComplete();
+        }
         return;
       }
 
@@ -166,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
       flashIntervalId = setInterval(() => {
         count += 1;
         reelList.forEach(reel => {
-          const icon = iconPool[Math.floor(Math.random() * iconPool.length)];
+          const icon = pool[Math.floor(Math.random() * pool.length)];
           setIconOnReel(reel, icon);
         });
 
@@ -189,15 +186,16 @@ document.addEventListener('DOMContentLoaded', function() {
       reels.forEach(reel => reel.classList.add('spin'));
       playTone(440, 0.25);
 
+      const iconPool = getIconPool();
+      const winRate = getWinRate();
+      const isWinningSpin = Math.random() * 100 < winRate;
+
       reels.forEach(reel => reel.classList.remove('spin'));
-      startResultFlash(() => {
-        const finalReels = container.querySelectorAll('.reel img');
-        const icons = Array.from(finalReels).map(img => (img.src || '').split('/').pop());
-        const hasIcons = icons.length > 0 && icons[0];
-        const win = hasIcons && icons.every(src => src === icons[0]);
+      startResultFlash(iconPool, () => {
+        applySpinResult(reelList, iconPool, isWinningSpin);
         const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
 
-        if (win) {
+        if (isWinningSpin) {
           result.innerHTML = `🎉 You WON! <a href="${offer.url}" target="_blank" rel="noopener noreferrer">${offer.title}</a>`;
           playWinSound();
         } else {
@@ -213,6 +211,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // === TMW Neon Icons Enhancement ===
 
+const resolveAssetsBaseUrl = () => {
+  if (typeof tmwSlot === 'undefined' || !tmwSlot) {
+    return '';
+  }
+
+  if (tmwSlot.assetsUrl) {
+    return String(tmwSlot.assetsUrl).trim().replace(/\/$/, '');
+  }
+
+  if (tmwSlot.url) {
+    return `${String(tmwSlot.url).trim().replace(/\/$/, '')}/assets`;
+  }
+
+  return '';
+};
+
 // Define available icons
 const tmwIcons = [
   'bonus.png',
@@ -222,11 +236,45 @@ const tmwIcons = [
   'value.png'
 ];
 
-const getTmwIconUrl = icon => {
-  if (typeof tmwSlot !== 'undefined' && tmwSlot.url) {
-    return `${tmwSlot.url}assets/img/${icon}`;
+const getIconPool = () => {
+  if (typeof tmwSlot !== 'undefined' && Array.isArray(tmwSlot.icons) && tmwSlot.icons.length) {
+    return tmwSlot.icons.filter(Boolean);
   }
-  return icon;
+  return tmwIcons.filter(Boolean);
+};
+
+const getWinRate = () => {
+  if (typeof tmwSlot !== 'undefined' && tmwSlot && typeof tmwSlot.winRate !== 'undefined') {
+    const parsed = Number(tmwSlot.winRate);
+    if (Number.isFinite(parsed)) {
+      return Math.min(100, Math.max(0, parsed));
+    }
+  }
+  return 50;
+};
+
+const getTmwIconUrl = icon => {
+  if (icon === null || typeof icon === 'undefined') {
+    return '';
+  }
+
+  const iconString = String(icon).trim();
+  if (!iconString) {
+    return '';
+  }
+
+  if (/^(?:https?:)?\/\//i.test(iconString) || iconString.startsWith('data:')) {
+    return iconString;
+  }
+
+  const normalizedIcon = iconString.replace(/^\/+/, '').replace(/^img\//, '');
+  const baseUrl = resolveAssetsBaseUrl();
+
+  if (baseUrl) {
+    return `${baseUrl}/img/${normalizedIcon}`;
+  }
+
+  return `assets/img/${normalizedIcon}`;
 };
 
 const ensureReelImage = reel => {
@@ -252,14 +300,21 @@ const ensureReelImage = reel => {
 };
 
 const setIconOnReel = (reel, icon) => {
-  if (!reel || !icon) {
+  if (!reel || (icon === null || typeof icon === 'undefined')) {
     return;
   }
+
   const iconUrl = getTmwIconUrl(icon);
+  if (!iconUrl) {
+    return;
+  }
+
   const img = ensureReelImage(reel);
   if (img) {
     img.src = iconUrl;
-    img.alt = icon.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+    const altSource = typeof icon === 'string' && icon ? icon : iconUrl;
+    const baseName = (altSource || '').split('/').pop() || '';
+    img.alt = baseName.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
     reel.style.backgroundImage = 'none';
   } else {
     reel.style.backgroundImage = `url(${iconUrl})`;
@@ -269,19 +324,57 @@ const setIconOnReel = (reel, icon) => {
   reel.style.backgroundPosition = 'center';
 };
 
+const applySpinResult = (reels, iconPool, isWinningSpin) => {
+  const reelArray = Array.from(reels || []);
+  const pool = Array.isArray(iconPool) ? iconPool.filter(Boolean) : getIconPool();
+
+  if (!reelArray.length || !pool.length) {
+    return [];
+  }
+
+  const pickRandomIcon = () => pool[Math.floor(Math.random() * pool.length)];
+
+  if (isWinningSpin) {
+    const winningIcon = pickRandomIcon();
+    reelArray.forEach(reel => setIconOnReel(reel, winningIcon));
+    return reelArray.map(() => winningIcon);
+  }
+
+  const selectedIcons = reelArray.map(() => pickRandomIcon());
+
+  if (selectedIcons.length > 1) {
+    const firstIcon = selectedIcons[0];
+    const allSame = selectedIcons.every(icon => icon === firstIcon);
+    if (allSame) {
+      const alternativeIcon = pool.find(icon => icon !== firstIcon);
+      if (alternativeIcon) {
+        selectedIcons[selectedIcons.length - 1] = alternativeIcon;
+      }
+    }
+  }
+
+  reelArray.forEach((reel, index) => setIconOnReel(reel, selectedIcons[index]));
+  return selectedIcons;
+};
+
 const setRandomIconsOnReels = reels => {
   const reelArray = Array.from(reels || []);
-  if (!reelArray.length || !tmwIcons.length) {
+  const iconPool = getIconPool();
+
+  if (!reelArray.length || !iconPool.length) {
     return;
   }
 
-  const shuffled = tmwIcons.slice();
+  const shuffled = iconPool.slice();
   for (let i = shuffled.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
 
   const iconsToUse = shuffled.slice(0, Math.min(reelArray.length, shuffled.length));
+  if (!iconsToUse.length) {
+    return;
+  }
 
   reelArray.forEach((reel, index) => {
     const icon = iconsToUse[index % iconsToUse.length];
@@ -291,14 +384,17 @@ const setRandomIconsOnReels = reels => {
 
 // Preload icons to prevent empty reels on first spin
 (function preloadTmwIcons() {
-  tmwIcons.forEach(icon => {
+  const iconsToPreload = getIconPool();
+  iconsToPreload.forEach(icon => {
     const img = new Image();
     const url = getTmwIconUrl(icon);
     if (url) {
       img.src = url;
     }
   });
-  console.log('[TMW Slot Machine] Icons preloaded:', tmwIcons.join(', '));
+  if (iconsToPreload.length) {
+    console.log('[TMW Slot Machine] Icons preloaded:', iconsToPreload.join(', '));
+  }
 })();
 
 // Apply random icons on load for fallback contexts
