@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    const winRate = parseFloat(container.dataset.winRate || '20');
     let soundEnabled = (container.dataset.soundDefault || 'off') === 'on';
     let offers = [];
     let audioContext;
@@ -144,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     };
 
-    const startResultFlash = () => {
+    const startResultFlash = (onComplete) => {
       stopResultFlash();
 
       const iconPool = (() => {
@@ -174,6 +173,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (count >= flashes) {
           clearInterval(flashIntervalId);
           flashIntervalId = null;
+          if (typeof onComplete === 'function') {
+            onComplete();
+          }
         }
       }, 250);
     };
@@ -188,22 +190,23 @@ document.addEventListener('DOMContentLoaded', function() {
       playTone(440, 0.25);
 
       reels.forEach(reel => reel.classList.remove('spin'));
-      startResultFlash();
+      startResultFlash(() => {
+        const finalReels = container.querySelectorAll('.reel img');
+        const icons = Array.from(finalReels).map(img => (img.src || '').split('/').pop());
+        const hasIcons = icons.length > 0 && icons[0];
+        const win = hasIcons && icons.every(src => src === icons[0]);
+        const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
 
-      const finalReels = container.querySelectorAll('.reel img');
-      const icons = Array.from(finalReels).map(img => (img.src || '').split('/').pop());
-      const win = icons.length > 0 && icons.every(src => src === icons[0] && src);
-      const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
+        if (win) {
+          result.innerHTML = `🎉 You WON! <a href="${offer.url}" target="_blank" rel="noopener noreferrer">${offer.title}</a>`;
+          playWinSound();
+        } else {
+          result.innerHTML = `😅 So close! Try again or <a href="${offer.url}" target="_blank" rel="noopener noreferrer">grab ${offer.title}</a>.`;
+          playTone(260, 0.2);
+        }
 
-      if (win) {
-        result.innerHTML = `🎉 You WON! <a href="${offer.url}" target="_blank" rel="noopener noreferrer">${offer.title}</a>`;
-        playWinSound();
-      } else {
-        result.innerHTML = `😅 So close! Try again or <a href="${offer.url}" target="_blank" rel="noopener noreferrer">grab ${offer.title}</a>.`;
-        playTone(260, 0.2);
-      }
-
-      btn.disabled = false;
+        btn.disabled = false;
+      });
     });
   });
 });

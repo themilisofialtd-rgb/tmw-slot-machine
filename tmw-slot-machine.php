@@ -52,8 +52,8 @@ function tmw_slot_machine_enqueue_assets() {
 
     // Provide JS access to the plugin URL for image and asset paths
     wp_localize_script('tmw-slot-js', 'tmwSlot', [
-        'url'        => TMW_SLOT_MACHINE_URL,
-        'assetsUrl'  => plugins_url('assets', __FILE__),
+        'url'       => plugins_url('', __FILE__),
+        'assetsUrl' => plugins_url('assets', __FILE__),
     ]);
 }
 
