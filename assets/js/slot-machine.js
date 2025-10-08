@@ -18,6 +18,44 @@ document.addEventListener('DOMContentLoaded', function() {
     let soundEnabled = (container.dataset.soundDefault || 'off') === 'on';
     let offers = [];
     let audioContext;
+    const winSound = new Audio(tmwSlot.assetsUrl + '/sounds/win.mp3');
+    let winSoundLoaded = false;
+
+    winSound.preload = 'auto';
+    winSound.volume = 0.9;
+    winSound.addEventListener('canplaythrough', () => {
+      winSoundLoaded = true;
+    }, { once: true });
+    winSound.addEventListener('error', () => {
+      winSoundLoaded = false;
+    });
+
+    const stopWinSound = () => {
+      try {
+        winSound.pause();
+        winSound.currentTime = 0;
+      } catch (error) {
+        // ignore
+      }
+    };
+
+    const playWinSound = () => {
+      if (!soundEnabled) {
+        return;
+      }
+
+      if (!winSoundLoaded) {
+        playTone(880, 0.5);
+        return;
+      }
+
+      stopWinSound();
+
+      const playPromise = winSound.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {});
+      }
+    };
 
     if (container.dataset.offers) {
       try {
@@ -88,6 +126,9 @@ document.addEventListener('DOMContentLoaded', function() {
           ctx.resume().catch(() => {});
         }
       }
+      if (!soundEnabled) {
+        stopWinSound();
+      }
       updateSoundLabel();
     });
 
@@ -141,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
       stopResultFlash();
       btn.disabled = true;
       result.textContent = '';
+      stopWinSound();
       setRandomIconsOnReels(reelList);
       reels.forEach(reel => reel.classList.add('spin'));
       playTone(440, 0.25);
@@ -153,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (win) {
         result.innerHTML = `🎉 You WON! <a href="${offer.url}" target="_blank" rel="noopener noreferrer">${offer.title}</a>`;
-        playTone(880, 0.5);
+        playWinSound();
       } else {
         result.innerHTML = `😅 So close! Try again or <a href="${offer.url}" target="_blank" rel="noopener noreferrer">grab ${offer.title}</a>.`;
         playTone(260, 0.2);
