@@ -49,6 +49,11 @@ function tmw_slot_machine_enqueue_assets() {
         tmw_slot_machine_asset_version('assets/js/slot-machine.js'),
         true
     );
+
+    // Provide JS access to the plugin URL for image paths
+    wp_localize_script('tmw-slot-js', 'tmwSlot', [
+        'url' => TMW_SLOT_MACHINE_URL,
+    ]);
 }
 
 // Register shortcode
