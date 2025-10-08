@@ -14,6 +14,21 @@ if (!defined('ABSPATH')) {
 define('TMW_SLOT_MACHINE_PATH', plugin_dir_path(__FILE__));
 define('TMW_SLOT_MACHINE_URL', plugin_dir_url(__FILE__));
 
+// Verify that all neon icon files exist
+add_action('init', function() {
+    $icons = ['bonus.png', 'peeks.png', 'deal.png', 'roses.png', 'value.png'];
+    $missing = [];
+    foreach ($icons as $icon) {
+        $path = TMW_SLOT_MACHINE_PATH . 'assets/img/' . $icon;
+        if (!file_exists($path)) {
+            $missing[] = $icon;
+        }
+    }
+    if (!empty($missing)) {
+        error_log('[TMW Slot Machine] Missing icons: ' . implode(', ', $missing));
+    }
+});
+
 function tmw_slot_machine_asset_version($relative_path) {
     $path = TMW_SLOT_MACHINE_PATH . ltrim($relative_path, '/');
     return file_exists($path) ? filemtime($path) : false;

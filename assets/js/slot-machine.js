@@ -115,3 +115,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+// === TMW Neon Icons Enhancement ===
+
+// Define available icons
+const tmwIcons = [
+  'bonus.png',
+  'peeks.png',
+  'deal.png',
+  'roses.png',
+  'value.png'
+];
+
+// Preload icons to prevent empty reels on first spin
+(function preloadTmwIcons() {
+  tmwIcons.forEach(icon => {
+    const img = new Image();
+    img.src = `${tmwSlot.url}assets/img/${icon}`;
+  });
+  console.log('[TMW Slot Machine] Icons preloaded:', tmwIcons.join(', '));
+})();
+
+// Apply random icons during spin (non-destructive patch)
+document.addEventListener('DOMContentLoaded', () => {
+  const reels = document.querySelectorAll('.reel');
+  if (!reels.length) return;
+
+  reels.forEach(r => {
+    const rand = Math.floor(Math.random() * tmwIcons.length);
+    r.style.backgroundImage = `url(${tmwSlot.url}assets/img/${tmwIcons[rand]})`;
+    r.style.backgroundSize = 'contain';
+    r.style.backgroundRepeat = 'no-repeat';
+    r.style.backgroundPosition = 'center';
+  });
+});
