@@ -149,3 +149,17 @@ document.addEventListener('DOMContentLoaded', () => {
     r.style.backgroundPosition = 'center';
   });
 });
+
+// === TMW Enhancement: Re-spin on button click ===
+document.addEventListener('DOMContentLoaded', () => {
+  const spinBtn = document.querySelector('.tmw-spin-btn');
+  const reels = document.querySelectorAll('.reel');
+  if (!spinBtn || !reels.length) return;
+
+  spinBtn.addEventListener('click', () => {
+    reels.forEach(r => {
+      const rand = Math.floor(Math.random() * tmwIcons.length);
+      r.style.backgroundImage = `url(${tmwSlot.url}assets/img/${tmwIcons[rand]})`;
+    });
+  });
+});
