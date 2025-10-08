@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   containers.forEach(container => {
     const btn = container.querySelector('.tmw-spin-btn');
     const reels = container.querySelectorAll('.reel');
+    const reelsContainer = container.querySelector('.tmw-reels');
     const result = container.querySelector('.tmw-result');
     const soundToggle = container.querySelector('.tmw-sound-toggle');
 
@@ -94,42 +95,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const reelList = Array.from(reels);
     setRandomIconsOnReels(reelList);
 
-    let bounceFlashIntervalId = null;
-    let bounceFlashTimeoutId = null;
+    let bounceFrameHandler = null;
 
     const stopBounceFlash = () => {
-      if (bounceFlashIntervalId) {
-        clearInterval(bounceFlashIntervalId);
-        bounceFlashIntervalId = null;
+      if (!reelsContainer) {
+        bounceFrameHandler = null;
+        return;
       }
-      if (bounceFlashTimeoutId) {
-        clearTimeout(bounceFlashTimeoutId);
-        bounceFlashTimeoutId = null;
+
+      if (bounceFrameHandler) {
+        reelsContainer.removeEventListener('animationiteration', bounceFrameHandler);
+        bounceFrameHandler = null;
       }
+
+      reelsContainer.removeEventListener('animationend', stopBounceFlash);
+      reelsContainer.classList.remove('bounce');
     };
 
     const startBounceFlash = () => {
       stopBounceFlash();
-      if (!reelList.length || !tmwIcons.length) {
+      if (!reelsContainer || !reelList.length || !tmwIcons.length) {
         return;
       }
 
-      const totalFlashes = 6;
-      const bounceDuration = 2000;
-      const intervalDuration = Math.max(Math.floor(bounceDuration / totalFlashes), 50);
-      let flashCount = 0;
-
-      const flash = () => {
-        flashCount += 1;
+      bounceFrameHandler = () => {
         setRandomIconsOnReels(reelList);
-        if (flashCount >= totalFlashes) {
-          stopBounceFlash();
-        }
       };
 
-      flash();
-      bounceFlashIntervalId = window.setInterval(flash, intervalDuration);
-      bounceFlashTimeoutId = window.setTimeout(stopBounceFlash, bounceDuration);
+      reelsContainer.addEventListener('animationiteration', bounceFrameHandler);
+      reelsContainer.addEventListener('animationend', stopBounceFlash);
+
+      reelsContainer.classList.remove('bounce');
+      // Force reflow to restart the animation if it was already applied
+      void reelsContainer.offsetWidth;
+      reelsContainer.classList.add('bounce');
+      bounceFrameHandler();
     };
 
     btn.addEventListener('click', () => {
