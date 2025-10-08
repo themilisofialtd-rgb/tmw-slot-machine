@@ -50,10 +50,15 @@ function tmw_slot_machine_enqueue_assets() {
         true
     );
 
+    $settings         = get_option('tmw_slot_machine_settings', []);
+    $win_probability  = isset($settings['win_rate']) ? (int) $settings['win_rate'] : 50;
+    $win_probability  = max(0, min(100, $win_probability));
+
     // Provide JS access to the plugin URL for image and asset paths
     wp_localize_script('tmw-slot-js', 'tmwSlot', [
         'url'       => plugins_url('', __FILE__),
         'assetsUrl' => plugins_url('assets', __FILE__),
+        'winRate'   => $win_probability,
     ]);
 }
 
