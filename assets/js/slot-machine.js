@@ -94,12 +94,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const reelList = Array.from(reels);
     setRandomIconsOnReels(reelList);
 
-    let flashTimeout = null;
+    let flashIntervalId = null;
 
     const stopResultFlash = () => {
-      if (flashTimeout) {
-        clearTimeout(flashTimeout);
-        flashTimeout = null;
+      if (flashIntervalId) {
+        clearInterval(flashIntervalId);
+        flashIntervalId = null;
       }
     };
 
@@ -123,22 +123,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const flashes = Math.floor(Math.random() * 4) + 6; // 6–9 flashes
       let count = 0;
 
-      const runFlash = () => {
+      flashIntervalId = setInterval(() => {
         count += 1;
         reelList.forEach(reel => {
           const icon = iconPool[Math.floor(Math.random() * iconPool.length)];
           setIconOnReel(reel, icon);
         });
 
-        if (count < flashes) {
-          const delay = 200 + Math.floor(Math.random() * 101); // 200–300 ms
-          flashTimeout = setTimeout(runFlash, delay);
-        } else {
-          flashTimeout = null;
+        if (count >= flashes) {
+          clearInterval(flashIntervalId);
+          flashIntervalId = null;
         }
-      };
-
-      runFlash();
+      }, 250);
     };
 
     btn.addEventListener('click', () => {
