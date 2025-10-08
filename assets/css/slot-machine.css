@@ -1,0 +1,99 @@
+.tmw-slot-machine {
+  text-align: center;
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px var(--tmw-accent-color, #ff003c);
+  width: 320px;
+  margin: 20px auto;
+  font-family: 'Arial', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tmw-branding {
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tmw-accent-color, #ff003c);
+}
+
+.tmw-reels {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.reel {
+  width: 60px;
+  height: 60px;
+  background: #222;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s;
+  border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.reel.spin {
+  animation: spin 0.4s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.tmw-spin-btn {
+  background: var(--tmw-accent-color, #ff003c);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 0 12px rgba(255, 0, 60, 0.5);
+}
+
+.tmw-spin-btn:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.tmw-spin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tmw-result {
+  margin-top: 10px;
+  font-size: 14px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tmw-result a {
+  color: var(--tmw-accent-color, #ff003c);
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.tmw-sound-toggle {
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #ccc;
+}
+
+@media (max-width: 420px) {
+  .tmw-slot-machine {
+    width: auto;
+  }
+}
