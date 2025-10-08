@@ -145,23 +145,21 @@ document.addEventListener('DOMContentLoaded', function() {
       reels.forEach(reel => reel.classList.add('spin'));
       playTone(440, 0.25);
 
-      setTimeout(() => {
-        reels.forEach(reel => reel.classList.remove('spin'));
-        startResultFlash();
+      reels.forEach(reel => reel.classList.remove('spin'));
+      startResultFlash();
 
-        const win = Math.random() * 100 < winRate;
-        const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
+      const win = Math.random() * 100 < winRate;
+      const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
 
-        if (win) {
-          result.innerHTML = `🎉 You WON! <a href="${offer.url}" target="_blank" rel="noopener noreferrer">${offer.title}</a>`;
-          playTone(880, 0.5);
-        } else {
-          result.innerHTML = `😅 So close! Try again or <a href="${offer.url}" target="_blank" rel="noopener noreferrer">grab ${offer.title}</a>.`;
-          playTone(260, 0.2);
-        }
+      if (win) {
+        result.innerHTML = `🎉 You WON! <a href="${offer.url}" target="_blank" rel="noopener noreferrer">${offer.title}</a>`;
+        playTone(880, 0.5);
+      } else {
+        result.innerHTML = `😅 So close! Try again or <a href="${offer.url}" target="_blank" rel="noopener noreferrer">grab ${offer.title}</a>.`;
+        playTone(260, 0.2);
+      }
 
-        btn.disabled = false;
-      }, 2500);
+      btn.disabled = false;
     });
   });
 });
