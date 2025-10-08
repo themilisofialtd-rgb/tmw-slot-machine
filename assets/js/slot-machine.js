@@ -91,14 +91,59 @@ document.addEventListener('DOMContentLoaded', function() {
       updateSoundLabel();
     });
 
+    const reelList = Array.from(reels);
+    setRandomIconsOnReels(reelList);
+
+    let bounceFlashIntervalId = null;
+    let bounceFlashTimeoutId = null;
+
+    const stopBounceFlash = () => {
+      if (bounceFlashIntervalId) {
+        clearInterval(bounceFlashIntervalId);
+        bounceFlashIntervalId = null;
+      }
+      if (bounceFlashTimeoutId) {
+        clearTimeout(bounceFlashTimeoutId);
+        bounceFlashTimeoutId = null;
+      }
+    };
+
+    const startBounceFlash = () => {
+      stopBounceFlash();
+      if (!reelList.length || !tmwIcons.length) {
+        return;
+      }
+
+      const totalFlashes = 6;
+      const bounceDuration = 2000;
+      const intervalDuration = Math.max(Math.floor(bounceDuration / totalFlashes), 50);
+      let flashCount = 0;
+
+      const flash = () => {
+        flashCount += 1;
+        setRandomIconsOnReels(reelList);
+        if (flashCount >= totalFlashes) {
+          stopBounceFlash();
+        }
+      };
+
+      flash();
+      bounceFlashIntervalId = window.setInterval(flash, intervalDuration);
+      bounceFlashTimeoutId = window.setTimeout(stopBounceFlash, bounceDuration);
+    };
+
     btn.addEventListener('click', () => {
+      stopBounceFlash();
       btn.disabled = true;
       result.textContent = '';
+      setRandomIconsOnReels(reelList);
       reels.forEach(reel => reel.classList.add('spin'));
       playTone(440, 0.25);
 
       setTimeout(() => {
         reels.forEach(reel => reel.classList.remove('spin'));
+        startBounceFlash();
+
         const win = Math.random() * 100 < winRate;
         const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
 
@@ -127,39 +172,87 @@ const tmwIcons = [
   'value.png'
 ];
 
+const getTmwIconUrl = icon => {
+  if (typeof tmwSlot !== 'undefined' && tmwSlot.url) {
+    return `${tmwSlot.url}assets/img/${icon}`;
+  }
+  return icon;
+};
+
+const ensureReelImage = reel => {
+  if (!reel) {
+    return null;
+  }
+  let img = reel.querySelector('img');
+  if (!img) {
+    img = document.createElement('img');
+    img.alt = '';
+    img.decoding = 'async';
+    img.loading = 'lazy';
+    img.draggable = false;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'contain';
+    img.style.display = 'block';
+    img.style.pointerEvents = 'none';
+    reel.innerHTML = '';
+    reel.appendChild(img);
+  }
+  return img;
+};
+
+const setIconOnReel = (reel, icon) => {
+  if (!reel || !icon) {
+    return;
+  }
+  const iconUrl = getTmwIconUrl(icon);
+  const img = ensureReelImage(reel);
+  if (img) {
+    img.src = iconUrl;
+    img.alt = icon.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+    reel.style.backgroundImage = 'none';
+  } else {
+    reel.style.backgroundImage = `url(${iconUrl})`;
+  }
+  reel.style.backgroundSize = 'contain';
+  reel.style.backgroundRepeat = 'no-repeat';
+  reel.style.backgroundPosition = 'center';
+};
+
+const setRandomIconsOnReels = reels => {
+  const reelArray = Array.from(reels || []);
+  if (!reelArray.length || !tmwIcons.length) {
+    return;
+  }
+
+  const shuffled = tmwIcons.slice();
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  const iconsToUse = shuffled.slice(0, Math.min(reelArray.length, shuffled.length));
+
+  reelArray.forEach((reel, index) => {
+    const icon = iconsToUse[index % iconsToUse.length];
+    setIconOnReel(reel, icon);
+  });
+};
+
 // Preload icons to prevent empty reels on first spin
 (function preloadTmwIcons() {
   tmwIcons.forEach(icon => {
     const img = new Image();
-    img.src = `${tmwSlot.url}assets/img/${icon}`;
+    const url = getTmwIconUrl(icon);
+    if (url) {
+      img.src = url;
+    }
   });
   console.log('[TMW Slot Machine] Icons preloaded:', tmwIcons.join(', '));
 })();
 
-// Apply random icons during spin (non-destructive patch)
+// Apply random icons on load for fallback contexts
 document.addEventListener('DOMContentLoaded', () => {
   const reels = document.querySelectorAll('.reel');
-  if (!reels.length) return;
-
-  reels.forEach(r => {
-    const rand = Math.floor(Math.random() * tmwIcons.length);
-    r.style.backgroundImage = `url(${tmwSlot.url}assets/img/${tmwIcons[rand]})`;
-    r.style.backgroundSize = 'contain';
-    r.style.backgroundRepeat = 'no-repeat';
-    r.style.backgroundPosition = 'center';
-  });
-});
-
-// === TMW Enhancement: Re-spin on button click ===
-document.addEventListener('DOMContentLoaded', () => {
-  const spinBtn = document.querySelector('.tmw-spin-btn');
-  const reels = document.querySelectorAll('.reel');
-  if (!spinBtn || !reels.length) return;
-
-  spinBtn.addEventListener('click', () => {
-    reels.forEach(r => {
-      const rand = Math.floor(Math.random() * tmwIcons.length);
-      r.style.backgroundImage = `url(${tmwSlot.url}assets/img/${tmwIcons[rand]})`;
-    });
-  });
+  setRandomIconsOnReels(reels);
 });
