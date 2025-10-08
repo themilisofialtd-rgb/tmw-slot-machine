@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
   containers.forEach(container => {
     const btn = container.querySelector('.tmw-spin-btn');
     const reels = container.querySelectorAll('.reel');
-    const reelsContainer = container.querySelector('.tmw-reels');
     const result = container.querySelector('.tmw-result');
     const soundToggle = container.querySelector('.tmw-sound-toggle');
 
@@ -95,45 +94,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const reelList = Array.from(reels);
     setRandomIconsOnReels(reelList);
 
-    let bounceFrameHandler = null;
+    let flashTimeout = null;
 
-    const stopBounceFlash = () => {
-      if (!reelsContainer) {
-        bounceFrameHandler = null;
-        return;
+    const stopResultFlash = () => {
+      if (flashTimeout) {
+        clearTimeout(flashTimeout);
+        flashTimeout = null;
       }
-
-      if (bounceFrameHandler) {
-        reelsContainer.removeEventListener('animationiteration', bounceFrameHandler);
-        bounceFrameHandler = null;
-      }
-
-      reelsContainer.removeEventListener('animationend', stopBounceFlash);
-      reelsContainer.classList.remove('bounce');
     };
 
-    const startBounceFlash = () => {
-      stopBounceFlash();
-      if (!reelsContainer || !reelList.length || !tmwIcons.length) {
+    const startResultFlash = () => {
+      stopResultFlash();
+
+      const iconPool = (() => {
+        if (typeof tmwSlot !== 'undefined' && Array.isArray(tmwSlot.icons) && tmwSlot.icons.length) {
+          return tmwSlot.icons.filter(Boolean);
+        }
+        if (Array.isArray(tmwIcons)) {
+          return tmwIcons.filter(Boolean);
+        }
+        return [];
+      })();
+
+      if (!reelList.length || !iconPool.length) {
         return;
       }
 
-      bounceFrameHandler = () => {
-        setRandomIconsOnReels(reelList);
+      const flashes = Math.floor(Math.random() * 4) + 6; // 6–9 flashes
+      let count = 0;
+
+      const runFlash = () => {
+        count += 1;
+        reelList.forEach(reel => {
+          const icon = iconPool[Math.floor(Math.random() * iconPool.length)];
+          setIconOnReel(reel, icon);
+        });
+
+        if (count < flashes) {
+          const delay = 200 + Math.floor(Math.random() * 101); // 200–300 ms
+          flashTimeout = setTimeout(runFlash, delay);
+        } else {
+          flashTimeout = null;
+        }
       };
 
-      reelsContainer.addEventListener('animationiteration', bounceFrameHandler);
-      reelsContainer.addEventListener('animationend', stopBounceFlash);
-
-      reelsContainer.classList.remove('bounce');
-      // Force reflow to restart the animation if it was already applied
-      void reelsContainer.offsetWidth;
-      reelsContainer.classList.add('bounce');
-      bounceFrameHandler();
+      runFlash();
     };
 
     btn.addEventListener('click', () => {
-      stopBounceFlash();
+      stopResultFlash();
       btn.disabled = true;
       result.textContent = '';
       setRandomIconsOnReels(reelList);
@@ -142,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       setTimeout(() => {
         reels.forEach(reel => reel.classList.remove('spin'));
-        startBounceFlash();
+        startResultFlash();
 
         const win = Math.random() * 100 < winRate;
         const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
