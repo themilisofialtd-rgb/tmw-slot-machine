@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let soundEnabled = (container.dataset.soundDefault || 'off') === 'on';
     let offers = [];
     let audioContext;
-    const winSound = new Audio(tmwSlot.assetsUrl + '/sounds/win.mp3');
+    const winSound = new Audio((tmwSlot.assetsUrl || tmwSlot.url) + '/sounds/win.mp3');
     let winSoundLoaded = false;
 
     winSound.preload = 'auto';
@@ -190,7 +190,9 @@ document.addEventListener('DOMContentLoaded', function() {
       reels.forEach(reel => reel.classList.remove('spin'));
       startResultFlash();
 
-      const win = Math.random() * 100 < winRate;
+      const finalReels = container.querySelectorAll('.reel img');
+      const icons = Array.from(finalReels).map(img => (img.src || '').split('/').pop());
+      const win = icons.length > 0 && icons.every(src => src === icons[0] && src);
       const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
 
       if (win) {
