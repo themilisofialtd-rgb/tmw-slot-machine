@@ -45,7 +45,7 @@
   justify-content: center;
 }
 
-.slot-spin {
+.slot-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -62,19 +62,7 @@
   cursor: pointer;
   box-shadow: 0 0 12px rgba(255, 51, 102, 0.6);
   transition: all 0.2s ease-in-out;
-}
-
-.slot-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  position: relative;
   z-index: 5;
-  line-height: 1;
-}
-
-.slot-btn .slot-label {
   line-height: 1;
 }
 
@@ -83,20 +71,8 @@
   opacity: 0.85;
 }
 
-.slot-icon {
-  font-size: 18px;
-  line-height: 1;
-  pointer-events: none;
-  margin-left: 6px;
-}
-
-.slot-spin:hover {
+.slot-btn:hover {
   transform: scale(1.05);
-}
-
-.slot-label {
-  display: inline-block;
-  line-height: 1;
 }
 
 .slot-btn.claim,
@@ -269,8 +245,8 @@
   }
 }
 
-.slot-spin:active,
-.slot-spin:hover {
+.slot-btn:active,
+.slot-btn:hover {
   animation: neonPulse 0.8s ease-in-out;
 }
 
@@ -330,7 +306,7 @@
     flex: 0 0 auto;
   }
 
-  .slot-spin {
+  .slot-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -346,13 +322,6 @@
     height: auto !important;
     transform: none !important;
     gap: 6px;
-  }
-
-  .slot-icon {
-    position: static;
-    transform: none;
-    margin-left: 0;
-    font-size: 16px;
   }
 
   .slot-right {
@@ -394,18 +363,15 @@
 
 /* BUTTON STATES */
 .slot-btn,
-.slot-spin,
 .tmw-claim-bonus {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.slot-spin,
 .slot-btn {
   background: linear-gradient(180deg, #ff0000 0%, #c40000 100%);
   box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
 }
 
-.slot-spin:hover,
 .slot-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 0 15px rgba(255, 60, 60, 0.9);
@@ -462,7 +428,7 @@
     width: 100%;
   }
 
-  .slot-spin {
+  .slot-btn {
     width: 100%;
     max-width: 320px;
     font-size: clamp(1rem, 4vw, 1.4rem);
