@@ -57,7 +57,7 @@
   font-size: 16px;
   white-space: nowrap;
   padding: 10px 50px 10px 30px;
-  border-radius: 50px;
+  border-radius: 9999px;
   cursor: pointer;
   box-shadow: 0 0 12px rgba(255, 51, 102, 0.6);
   transition: all 0.2s ease-in-out;
@@ -217,6 +217,7 @@
     display: flex;
     justify-content: center;
     margin: 0;
+    flex: 0 0 auto;
   }
 
   .slot-reels {
@@ -240,13 +241,14 @@
     margin: 0;
     background: transparent !important;
     height: auto !important;
+    flex: 0 0 auto;
   }
 
   .slot-spin {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50px !important;
+    border-radius: 9999px !important;
     padding: 8px 34px !important;
     font-size: 14px;
     font-weight: 700;
@@ -273,6 +275,7 @@
     align-items: center;
     text-align: center;
     gap: 4px;
+    flex: 0 0 auto;
   }
 
   .slot-result {
