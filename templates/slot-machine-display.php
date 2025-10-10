@@ -7,7 +7,7 @@ $offers = $settings['offers'] ?? [];
 $offers_json = esc_attr(wp_json_encode($offers));
 ?>
 <div class="tmw-slot-machine" data-win-rate="<?php echo esc_attr($win_rate); ?>" data-sound-default="<?php echo esc_attr($sound_default); ?>" data-offers="<?php echo $offers_json; ?>" style="--tmw-accent-color: <?php echo esc_attr($accent_color); ?>;">
-  <div class="tmw-branding">By Adultwebmaster69 | Top-Models Webcam Studio</div>
+  <div class="slot-headline">Spin Now &amp; Reveal Your Secret Bonus 👀</div>
   <div class="tmw-reels">
     <div class="reel"></div>
     <div class="reel"></div>
