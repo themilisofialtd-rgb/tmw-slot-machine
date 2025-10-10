@@ -5,6 +5,27 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   containers.forEach(container => {
+    const headlineText = (typeof tmwSlot !== 'undefined' && tmwSlot && typeof tmwSlot.headline === 'string')
+      ? tmwSlot.headline
+      : '';
+
+    if (headlineText) {
+      let headlineEl = container.querySelector('.slot-headline');
+      if (!headlineEl) {
+        headlineEl = document.createElement('div');
+        headlineEl.className = 'slot-headline';
+        const reelsWrapper = container.querySelector('.slot-reels, .tmw-reels');
+        headlineEl.textContent = headlineText;
+        if (reelsWrapper) {
+          container.insertBefore(headlineEl, reelsWrapper);
+        } else {
+          container.insertBefore(headlineEl, container.firstChild);
+        }
+      } else {
+        headlineEl.textContent = headlineText;
+      }
+    }
+
     const assetsBaseUrl = resolveAssetsBaseUrl();
     const btn = container.querySelector('.tmw-spin-btn');
     const reels = container.querySelectorAll('.reel');
