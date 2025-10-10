@@ -86,18 +86,39 @@
 
 /* Spin button */
 .slot-spin {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--tmw-accent-color, #ff3366);
   border: none;
   color: #fff;
   font-weight: bold;
-  font-size: 15px;
-  padding: 10px 24px;
+  font-size: 16px;
+  padding: 10px 45px 10px 26px;
   border-radius: 50px;
   cursor: pointer;
   box-shadow: 0 0 8px rgba(255,51,102,0.6);
   transition: all 0.2s ease-in-out;
+  overflow: hidden;
 }
-.slot-spin:hover { transform: scale(1.05); }
+
+.slot-spin:hover {
+  transform: scale(1.05);
+}
+
+.slot-label {
+  line-height: 1;
+}
+
+.slot-icon {
+  position: absolute;
+  right: 18px;
+  font-size: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
 
 /* Offer text */
 .slot-result {
