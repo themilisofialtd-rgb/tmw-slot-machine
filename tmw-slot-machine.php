@@ -118,6 +118,9 @@ add_action('wp_ajax_tmw_slot_log', 'tmw_slot_log_callback');
 function tmw_slot_log_callback() {
     $raw_state = isset($_POST['state']) ? $_POST['state'] : 'unknown';
     $state     = sanitize_text_field(wp_unslash($raw_state));
+    if ($state === 'conflict') {
+        error_log('[SlotMachine] Duplicate button detected and hidden.');
+    }
     error_log('[SlotMachine] UI State: ' . $state);
     wp_die();
 }

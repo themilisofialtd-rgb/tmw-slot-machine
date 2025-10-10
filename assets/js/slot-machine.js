@@ -37,12 +37,30 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    const detectDuplicateButtons = (context = 'runtime') => {
+      const buttonList = Array.from(container.querySelectorAll('.slot-btn'));
+      if (buttonList.length > 1) {
+        const stageDetails = context ? ` during ${context}` : '';
+        console.warn(`[TMW Slot Machine] Duplicate slot-btn detected${stageDetails}.`, buttonList);
+        logSlotState('conflict');
+      }
+      return buttonList;
+    };
+
+    detectDuplicateButtons('initialization');
+
     const existingButtons = Array.from(container.querySelectorAll('.slot-btn'));
     existingButtons.forEach(buttonEl => {
       if (buttonEl !== btn && buttonEl.parentNode) {
         buttonEl.parentNode.removeChild(buttonEl);
       }
     });
+
+    if (btn && btn.id !== 'tmw-slot-btn') {
+      btn.id = 'tmw-slot-btn';
+    }
+
+    detectDuplicateButtons('post-cleanup');
 
     result.classList.add('slot-result');
 
@@ -108,7 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      const buttonCount = container.querySelectorAll('.slot-btn').length;
+      const buttons = detectDuplicateButtons(state);
+      const buttonCount = buttons.length;
       const diagnostic = `${state}|buttons=${buttonCount}|disabled=${disabled ? '1' : '0'}|valid=${buttonCount === 1 ? 'ok' : 'dup'}`;
       logSlotState(diagnostic);
     };
