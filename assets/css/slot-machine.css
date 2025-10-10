@@ -146,27 +146,17 @@
   opacity: 1;
 }
 
-/* === Offer link heartbeat animation === */
-@keyframes offerHeartbeat {
-  0% {
-    color: #ffffff;
-    text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+/* === Offer text heartbeat animation === */
+@keyframes heartbeatWin {
+  0%, 100% {
+    color: #ff3366;
+    text-shadow: 0 0 8px rgba(255, 51, 102, 0.9);
     transform: scale(1);
   }
-  40% {
-    color: #ff3366;
-    text-shadow: 0 0 8px rgba(255, 51, 102, 0.8);
-    transform: scale(1.03);
-  }
-  60% {
+  50% {
     color: #ffffff;
-    text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
-    transform: scale(1);
-  }
-  100% {
-    color: #ff3366;
-    text-shadow: 0 0 8px rgba(255, 51, 102, 0.8);
-    transform: scale(1.03);
+    text-shadow: 0 0 12px rgba(255, 51, 102, 0.9);
+    transform: scale(1.05);
   }
 }
 
@@ -175,7 +165,7 @@
   color: var(--tmw-accent-color, #ff3366);
   text-decoration: none;
   font-weight: 700;
-  animation: offerHeartbeat 1.4s infinite ease-in-out;
+  animation: heartbeatWin 1.4s infinite ease-in-out;
 }
 
 .slot-offer-link:hover {
@@ -183,193 +173,119 @@
   animation: none; /* stops flashing while hovered */
 }
 
-/* === MOBILE COMPACT FIX === */
-@media (max-width: 700px) {
-  .slot-body {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 6px 0;
+/* === Neon pulse effect for spin button === */
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.9);
   }
-
-  /* Place reels above the button */
-  .slot-center {
-    order: 1;
-    margin-bottom: 5px;
-  }
-
-  .slot-left {
-    order: 2;
-    margin: 0;
-  }
-
-  /* Shrink button size to fit tighter */
-  .slot-spin {
-    padding: 8px 28px;
-    font-size: 14px;
-    min-width: 120px;
-    border-radius: 35px;
-    transform: none;
-    margin-top: 6px;
-  }
-
-  /* Reels smaller and closer together */
-  .reel {
-    width: 70px;
-    height: 70px;
-    margin: 0;
-  }
-
-  .slot-reels {
-    gap: 8px;
-  }
-
-  /* Compact headline spacing */
-  .slot-headline {
-    font-size: 17px;
-    margin-bottom: 6px;
-  }
-
-  /* Reduce extra spacing below offer and sound */
-  .slot-result {
-    font-size: 15px;
-    margin-top: 4px;
-  }
-
-  .slot-sound-toggle {
-    font-size: 12px;
-    margin-top: 2px;
-  }
-
-  /* Compact glow box */
-  .tmw-slot-machine {
-    padding: 10px;
-    box-shadow: 0 0 16px rgba(255, 0, 60, 0.85);
+  50% {
+    box-shadow: 0 0 18px rgba(255, 102, 153, 1);
   }
 }
-/* === MOBILE PERFECT SLOT LAYOUT === */
+
+.slot-spin:active,
+.slot-spin:hover {
+  animation: neonPulse 0.8s ease-in-out;
+}
+
+/* === MOBILE SLOT LAYOUT (≤700px) === */
 @media (max-width: 700px) {
+  .tmw-slot-machine {
+    max-width: 100%;
+    padding: 12px 14px;
+    box-shadow: 0 0 18px rgba(255, 51, 102, 0.9);
+  }
+
+  .slot-headline {
+    font-size: 18px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
   .slot-body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     padding: 8px 0;
     text-align: center;
   }
 
-  /* Order: reels → button → text → sound */
-  .slot-center { order: 1; margin: 0; }
-  .slot-left   { order: 2; margin: 0 !important; height: auto !important; background: transparent !important; }
-  .slot-right  { order: 3; align-items: center; text-align: center; gap: 4px; }
-
-  /* Reels */
-  .slot-reels {
+  .slot-center {
+    order: 1;
+    width: 100%;
     display: flex;
     justify-content: center;
+    margin: 0;
+  }
+
+  .slot-reels {
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     margin: 0;
   }
 
   .reel {
-    width: 75px;
-    height: 75px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    width: 70px;
+    height: 70px;
   }
 
-  /* Spin button (centered under reels) */
+  .slot-left {
+    order: 2;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    background: transparent !important;
+    height: auto !important;
+  }
+
   .slot-spin {
-    margin-top: 5px;
-    padding: 9px 36px;
-    font-size: 15px;
-    border-radius: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px !important;
+    padding: 8px 34px !important;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
     background: var(--tmw-accent-color, #ff3366);
     box-shadow: 0 0 12px rgba(255, 51, 102, 0.8);
-    transform: none;
+    color: #fff;
+    min-width: auto !important;
+    height: auto !important;
+    transform: none !important;
+    gap: 6px;
   }
 
-  /* Offer text + sound */
+  .slot-icon {
+    position: static;
+    transform: none;
+    margin-left: 0;
+    font-size: 16px;
+  }
+
+  .slot-right {
+    order: 3;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+  }
+
   .slot-result {
-    margin-top: 8px;
+    margin-top: 6px;
     font-size: 16px;
     font-weight: 700;
     color: var(--tmw-accent-color, #ff3366);
-    text-align: center;
     animation: heartbeatWin 1.4s infinite ease-in-out;
   }
 
   .slot-sound-toggle {
     font-size: 13px;
-    margin-top: 3px;
     color: #ccc;
-    opacity: 0.9;
-  }
-
-  /* Keep container glow tight */
-  .tmw-slot-machine {
-    max-width: 100%;
-    padding: 10px;
-    box-shadow: 0 0 18px rgba(255, 0, 60, 0.9);
-    border-radius: 10px;
-  }
-
-  /* Heartbeat animation for link text */
-  @keyframes heartbeatWin {
-    0%, 100% { color: #ff3366; text-shadow: 0 0 6px rgba(255,51,102,0.8); transform: scale(1); }
-    50% { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,1); transform: scale(1.05); }
-  }
-}
-
-/* === MOBILE FIX: True Oval Button === */
-@media (max-width: 700px) {
-  .slot-spin {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--tmw-accent-color, #ff3366);
-    color: #fff;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 8px 34px !important;  /* long oval */
-    min-width: auto !important;
-    height: auto !important;
-    border-radius: 50px !important; /* force oval shape */
-    box-shadow: 0 0 10px rgba(255, 51, 102, 0.9);
-    transform: none !important;
-    line-height: 1;
-  }
-
-  .slot-icon {
-    font-size: 16px;
-    margin-left: 6px;
-    position: static;
-    transform: none;
-  }
-
-  /* prevent any flex or container height override */
-  .slot-left {
-    height: auto !important;
-    display: flex;
-    justify-content: center;
-    background: transparent !important;
-  }
-
-  /* tighten layout */
-  .slot-body {
-    gap: 5px !important;
-    padding: 8px 0 !important;
-  }
-
-  .slot-reels {
-    gap: 8px;
-  }
-
-  .tmw-slot-machine {
-    padding: 10px;
-    box-shadow: 0 0 18px rgba(255, 0, 60, 0.9);
+    margin-top: 2px;
   }
 }
