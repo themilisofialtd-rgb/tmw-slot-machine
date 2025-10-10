@@ -144,10 +144,47 @@ document.addEventListener('DOMContentLoaded', function() {
           winContainer.className = 'tmw-win-message';
         }
 
+        const baseLabel = '🎉 You Win';
+        let messagePrefix = baseLabel;
+        let prizeText = '';
+
+        if (displayMessage.startsWith(baseLabel)) {
+          const remainder = displayMessage.slice(baseLabel.length).trim();
+          if (!remainder || !remainder.replace(/[!\s]+/g, '')) {
+            messagePrefix = displayMessage.trim();
+          } else {
+            prizeText = remainder;
+          }
+        } else {
+          messagePrefix = displayMessage.trim();
+        }
+
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(document.createTextNode(messagePrefix));
+
+        let prizeSpanCreated = false;
+
+        if (prizeText) {
+          fragment.appendChild(document.createTextNode(' '));
+          try {
+            const prizeSpan = document.createElement('span');
+            prizeSpan.className = 'tmw-prize-text';
+            prizeSpan.textContent = prizeText;
+            fragment.appendChild(prizeSpan);
+            prizeSpanCreated = true;
+          } catch (error) {
+            prizeSpanCreated = false;
+          }
+        }
+
         winContainer.textContent = '';
 
-        const textNode = document.createTextNode(`${displayMessage} `);
-        winContainer.appendChild(textNode);
+        if (!prizeText || prizeSpanCreated) {
+          fragment.appendChild(document.createTextNode(' '));
+          winContainer.appendChild(fragment);
+        } else {
+          winContainer.textContent = `${displayMessage} `;
+        }
 
         const linkEl = document.createElement('a');
         linkEl.className = 'tmw-claim-bonus';
@@ -157,19 +194,30 @@ document.addEventListener('DOMContentLoaded', function() {
         linkEl.href = trimmedUrl;
         winContainer.appendChild(linkEl);
 
-        if (!result.contains(winContainer)) {
-          result.innerHTML = '';
-          result.appendChild(winContainer);
-        } else {
-          Array.from(result.children).forEach(child => {
-            if (child !== winContainer) {
-              child.remove();
-            }
-          });
-        }
+        result.innerHTML = '';
+        result.appendChild(winContainer);
 
         return true;
       } catch (error) {
+        try {
+          result.innerHTML = '';
+          const fallbackContainer = document.createElement('div');
+          fallbackContainer.className = 'tmw-win-message';
+          fallbackContainer.textContent = `${displayMessage} `;
+
+          const fallbackLink = document.createElement('a');
+          fallbackLink.className = 'tmw-claim-bonus';
+          fallbackLink.target = '_blank';
+          fallbackLink.rel = 'nofollow noopener';
+          fallbackLink.textContent = 'Claim Your Bonus';
+          fallbackLink.href = trimmedUrl;
+
+          fallbackContainer.appendChild(fallbackLink);
+          result.appendChild(fallbackContainer);
+          return true;
+        } catch (fallbackError) {
+          result.textContent = displayMessage;
+        }
         return false;
       }
     };
