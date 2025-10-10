@@ -1,100 +1,50 @@
-/* Compact banner layout */
+/* === SLOT CONTAINER === */
 .tmw-slot-machine {
   width: 100%;
   max-width: 970px;
   margin: 0 auto 10px auto;
-  background: #111;
-  border-radius: 8px;
-  padding: 14px 18px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  background: #0a0a0a;
+  border-radius: 10px;
+  padding: 10px 15px;
+  position: relative;
+  box-shadow: 0 0 22px rgba(255, 0, 50, 0.85); /* vivid red glow */
+  transition: box-shadow 0.3s ease-in-out;
   color: #fff;
   font-family: 'Arial', sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  gap: 6px;
 }
 
+.tmw-slot-machine:hover {
+  box-shadow: 0 0 30px rgba(255, 0, 60, 1);
+}
+
+/* === HEADLINE === */
 .slot-headline {
   text-align: center;
   font-size: 20px;
   font-weight: 700;
   color: var(--tmw-accent-color, #ff3366);
+  margin-bottom: 10px;
   letter-spacing: 0.5px;
-  text-shadow: 0 0 8px rgba(255, 51, 102, 0.5);
-  animation: fadeInHeadline 1s ease-in;
+  text-shadow: 0 0 10px rgba(255, 51, 102, 0.7);
 }
 
-@keyframes fadeInHeadline {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Inline banner layout – perfectly aligned */
+/* === FLEX STRUCTURE === */
 .slot-body {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 25px;
   width: 100%;
-  max-width: 970px;
-  margin: 0 auto;
   padding: 0;
 }
 
-/* Left, center, right zones */
-.slot-left,
-.slot-center,
-.slot-right {
+/* === BUTTON === */
+.slot-left {
+  flex: 0 0 150px;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
-.slot-left { flex: 0 0 140px; }
-.slot-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-.slot-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  flex: 0 0 220px;
-  text-align: left;
-  line-height: 1.2;
-  gap: 6px;
-}
-
-/* Reels aligned to button height */
-.slot-reels {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  height: 100px;
-  margin: 0;
-}
-
-.reel {
-  width: 85px;
-  height: 85px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-/* Spin button */
 .slot-spin {
   position: relative;
   display: inline-flex;
@@ -109,19 +59,8 @@
   padding: 10px 50px 10px 30px;
   border-radius: 50px;
   cursor: pointer;
-  box-shadow: 0 0 8px rgba(255,51,102,0.6);
+  box-shadow: 0 0 12px rgba(255, 51, 102, 0.6);
   transition: all 0.2s ease-in-out;
-  overflow: hidden;
-  min-width: 150px;
-}
-
-.slot-spin:hover {
-  transform: scale(1.05);
-}
-
-.slot-label {
-  display: inline-block;
-  line-height: 1;
 }
 
 .slot-icon {
@@ -134,13 +73,57 @@
   pointer-events: none;
 }
 
-/* Offer text */
+.slot-spin:hover {
+  transform: scale(1.05);
+}
+
+.slot-label {
+  display: inline-block;
+  line-height: 1;
+}
+
+/* === REELS === */
+.slot-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.slot-reels {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.reel {
+  width: 90px;   /* reduced from 110px */
+  height: 90px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent !important;
+  border: none;
+  box-shadow: none;
+}
+
+/* === RIGHT SIDE === */
+.slot-right {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
 .slot-result {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--tmw-accent-color, #ff3366);
-  text-align: left;
-  white-space: nowrap;
+  text-align: center;
   margin: 0;
   padding: 0;
   opacity: 0;
@@ -161,12 +144,11 @@
   text-decoration: underline;
 }
 
-/* Sound toggle style (inline) */
 .slot-sound-toggle {
-  font-size: 13px;
+  font-size: 14px;
   color: #bbb;
+  opacity: 0.9;
   cursor: pointer;
-  opacity: 0.8;
   transition: opacity 0.3s ease;
 }
 
@@ -175,14 +157,31 @@
 }
 
 @keyframes pulseGlow {
-  0% { text-shadow: 0 0 4px rgba(255, 51, 102, 0.6); }
-  50% { text-shadow: 0 0 10px rgba(255, 51, 102, 1); }
-  100% { text-shadow: 0 0 4px rgba(255, 51, 102, 0.6); }
+  0% {
+    text-shadow: 0 0 4px rgba(255, 51, 102, 0.6);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 51, 102, 1);
+  }
+  100% {
+    text-shadow: 0 0 4px rgba(255, 51, 102, 0.6);
+  }
 }
 
-/* Responsive stacking */
+/* === MOBILE === */
 @media (max-width: 700px) {
-  .slot-body { flex-direction: column; gap: 8px; }
-  .slot-result { text-align: center; white-space: normal; }
-  .reel { width: 70px; height: 70px; }
+  .slot-body {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .slot-result {
+    text-align: center;
+    white-space: normal;
+  }
+
+  .reel {
+    width: 75px;
+    height: 75px;
+  }
 }
