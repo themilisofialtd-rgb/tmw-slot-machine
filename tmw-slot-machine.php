@@ -118,16 +118,14 @@ add_action('wp_ajax_tmw_slot_log', 'tmw_slot_log_callback');
 function tmw_slot_log_callback() {
     $raw_state = isset($_POST['state']) ? $_POST['state'] : 'unknown';
     $state     = sanitize_text_field(wp_unslash($raw_state));
-    if ($state === 'cleanup') {
-        error_log('[SlotMachine] Duplicate button removed by runtime cleaner.');
+    if ($state === 'cleanup' || strpos($state, 'duplicate_auto_removed') === 0 || $state === 'duplicate_removed') {
+        error_log('[SlotMachine] Duplicate button auto-removed.');
     }
 
-    if ($state === 'conflict') {
+    if (strpos($state, 'conflict') === 0) {
         error_log('[SlotMachine] Duplicate button detected and hidden.');
     }
-    if ($state === 'duplicate_removed') {
-        error_log('[SlotMachine] Duplicate Claim Bonus node auto-removed.');
-    }
+
     error_log('[SlotMachine] UI State: ' . $state);
     wp_die();
 }

@@ -1,39 +1,71 @@
-let slotBtn = document.getElementById('tmw-slot-btn');
+const SLOT_BUTTON_ID = 'tmw-slot-btn';
+const SLOT_BUTTON_CLASS = 'slot-btn';
+let slotBtn = document.getElementById(SLOT_BUTTON_ID);
 
-document.querySelectorAll('.slot-btn.claim:not(#tmw-slot-btn)').forEach(element => {
-  if (element && element.parentNode) {
-    element.remove();
-  }
-});
-
-function purgeDuplicateButtons() {
-  if (!slotBtn || !document.body.contains(slotBtn)) {
-    slotBtn = document.getElementById('tmw-slot-btn');
-  }
-
-  if (!slotBtn) {
-    return;
+function enforceSingleSlotButton(context = 'runtime', scope) {
+  const searchRoot = scope instanceof Element ? scope : document;
+  const allButtons = Array.from(searchRoot.querySelectorAll(`.${SLOT_BUTTON_CLASS}`));
+  if (!allButtons.length) {
+    slotBtn = document.getElementById(SLOT_BUTTON_ID);
+    return [];
   }
 
-  const buttons = document.querySelectorAll('.slot-btn');
-  const duplicates = [];
-  buttons.forEach(button => {
-    if (button !== slotBtn) {
-      duplicates.push(button);
+  let canonicalButton = searchRoot.querySelector(`#${SLOT_BUTTON_ID}`) || allButtons[0];
+  if (canonicalButton && !canonicalButton.id) {
+    canonicalButton.id = SLOT_BUTTON_ID;
+  }
+
+  if (canonicalButton && allButtons[0] !== canonicalButton && canonicalButton.parentNode) {
+    canonicalButton.parentNode.insertBefore(canonicalButton, canonicalButton.parentNode.firstChild);
+  }
+
+  const buttonsForCheck = Array.from(searchRoot.querySelectorAll(`.${SLOT_BUTTON_CLASS}`));
+  let duplicatesRemoved = false;
+  const removedButtons = [];
+  buttonsForCheck.forEach((button, index) => {
+    if (!canonicalButton && index === 0) {
+      canonicalButton = button;
+      if (!canonicalButton.id) {
+        canonicalButton.id = SLOT_BUTTON_ID;
+      }
+      return;
+    }
+
+    if (button !== canonicalButton && index > 0) {
+      if (!duplicatesRemoved) {
+        logSlotState(`conflict|${context}`);
+      }
+      duplicatesRemoved = true;
+      if (button && button.parentNode) {
+        button.parentNode.removeChild(button);
+      }
+      removedButtons.push(button);
     }
   });
 
-  if (duplicates.length) {
-    duplicates.forEach(extraButton => {
-      if (extraButton && extraButton.parentNode) {
-        extraButton.remove();
-      }
-    });
+  if (duplicatesRemoved) {
+    console.warn(`[TMW Slot Machine] Duplicate slot button removed (${context}).`, removedButtons);
+    logSlotState(`duplicate_auto_removed|${context}`);
+  }
+
+  slotBtn = document.getElementById(SLOT_BUTTON_ID) || canonicalButton || null;
+  return [canonicalButton].filter(Boolean);
+}
+
+function purgeDuplicateButtons(context = 'purge') {
+  const beforeCount = document.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length;
+  enforceSingleSlotButton(context);
+  const afterCount = document.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length;
+  if (beforeCount > 1 && afterCount === 1) {
     logSlotState('cleanup');
   }
 }
 
+enforceSingleSlotButton('bootstrap');
+
 document.addEventListener('DOMContentLoaded', function() {
+  enforceSingleSlotButton('dom-ready');
+
   const containers = document.querySelectorAll('.tmw-slot-machine');
   if (!containers.length) {
     return;
@@ -70,38 +102,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const reelsContainer = container.querySelector('.slot-reels, .tmw-reels');
     const soundToggle = container.querySelector('.tmw-sound-toggle');
 
+    enforceSingleSlotButton('container-init', container);
+
     if (!slotBtn || !reels.length || !result || !soundToggle) {
       return;
     }
 
-    const detectDuplicateButtons = (context = 'runtime') => {
-      const buttonList = Array.from(container.querySelectorAll('.slot-btn'));
-      if (buttonList.length > 1) {
-        const stageDetails = context ? ` during ${context}` : '';
-        console.warn(`[TMW Slot Machine] Duplicate slot-btn detected${stageDetails}.`, buttonList);
-        logSlotState('conflict');
-      }
-      return buttonList;
-    };
-
-    const logDuplicateButtonsIfAny = () => {
-      const btns = document.querySelectorAll('.slot-btn');
-      if (btns.length > 1) {
-        logSlotState('duplicate_removed');
-      }
-      return btns;
-    };
-
-    detectDuplicateButtons('initialization');
-
-    const existingButtons = Array.from(container.querySelectorAll('.slot-btn'));
-    existingButtons.forEach(buttonEl => {
-      if (buttonEl !== slotBtn && buttonEl.parentNode) {
-        buttonEl.parentNode.removeChild(buttonEl);
-      }
-    });
-
-    detectDuplicateButtons('post-cleanup');
+    enforceSingleSlotButton('post-init', container);
 
     result.classList.add('slot-result');
 
@@ -124,8 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      const buttons = detectDuplicateButtons(state);
-      const buttonCount = buttons.length;
+      enforceSingleSlotButton(state, container);
+      const buttonCount = document.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length;
       const diagnostic = `${state}|buttons=${buttonCount}|disabled=${disabled ? '1' : '0'}|valid=${buttonCount === 1 ? 'ok' : 'dup'}`;
       logSlotState(diagnostic);
     };
@@ -133,36 +140,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateButtonState(state, options = {}) {
       const { disabled = false, focus = false } = options;
 
-      let removedDuplicates = false;
-      document.querySelectorAll('.slot-container .slot-btn:not(#tmw-slot-btn)').forEach(button => {
-        removedDuplicates = true;
-        button.remove();
-      });
+      enforceSingleSlotButton(`update:${state}`, container);
 
-      const btn = document.getElementById('tmw-slot-btn');
-      if (!btn) {
-        slotBtn = null;
-        return;
+      slotBtn = document.getElementById(SLOT_BUTTON_ID) || slotBtn;
+
+      if (!slotBtn || !container.contains(slotBtn)) {
+        const [fallbackBtn] = enforceSingleSlotButton(`rehydrate:${state}`, container);
+        slotBtn = fallbackBtn || null;
       }
-
-      btn.className = 'slot-btn';
-      const cloned = btn.cloneNode(true);
-      btn.replaceWith(cloned);
-
-      const newBtn = document.getElementById('tmw-slot-btn') || document.querySelector('.slot-btn');
-      slotBtn = newBtn || null;
 
       if (!slotBtn) {
         return;
       }
 
       if (!slotBtn.id) {
-        slotBtn.id = 'tmw-slot-btn';
+        slotBtn.id = SLOT_BUTTON_ID;
       }
 
       currentButtonState = state;
 
-      slotBtn.className = 'slot-btn';
+      slotBtn.classList.remove('spin', 'claim', 'reset', 'spin-again');
+      slotBtn.classList.add(SLOT_BUTTON_CLASS);
       slotBtn.dataset.mode = state;
       slotBtn.dataset.state = state;
       slotBtn.disabled = Boolean(disabled);
@@ -170,18 +168,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
       switch (state) {
         case BUTTON_STATES.CLAIM:
-          slotBtn.textContent = '🎁 Claim Your Bonus';
+          slotBtn.textContent = 'Claim Your Bonus';
           slotBtn.classList.add('claim');
           slotBtn.onclick = handleClaimClick;
           break;
         case BUTTON_STATES.RESET:
-          slotBtn.textContent = '🔁 Spin Again';
+          slotBtn.textContent = 'Spin Again';
           slotBtn.classList.add('reset', 'spin-again');
           slotBtn.onclick = startSpin;
           break;
         case BUTTON_STATES.SPIN:
         default:
-          slotBtn.textContent = '🎰 Spin Now';
+          slotBtn.textContent = 'Spin Now';
           slotBtn.classList.add('spin');
           slotBtn.onclick = startSpin;
           break;
@@ -189,16 +187,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
       slotBtn.classList.add('is-active');
 
+      if (!slotBtn.hasAttribute('type')) {
+        slotBtn.setAttribute('type', 'button');
+      }
+
       if (focus && typeof slotBtn.focus === 'function') {
         slotBtn.focus();
       }
 
       validateAndLogState(state, { disabled });
-
-      const count = document.querySelectorAll('.slot-btn').length;
-      if (count > 1 || removedDuplicates) {
-        logSlotState('duplicate_removed');
-      }
+      enforceSingleSlotButton(`post-update:${state}`, container);
     }
 
     const clearClaimResetTimeout = () => {
@@ -221,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function resetSpinButton(options = {}) {
-      purgeDuplicateButtons();
+      purgeDuplicateButtons('reset');
 
       clearClaimResetTimeout();
       detachClaimResetListeners();
@@ -233,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const nextState = hasCompletedSpin ? BUTTON_STATES.RESET : BUTTON_STATES.SPIN;
       updateButtonState(nextState, options);
-      logDuplicateButtonsIfAny();
+      enforceSingleSlotButton('reset:post', container);
     }
 
     const scheduleClaimReset = () => {
@@ -290,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       scheduleClaimReset();
       attachClaimResetListeners();
-      logDuplicateButtonsIfAny();
+      enforceSingleSlotButton('claim:post', container);
     };
 
     if (slotBtn) {
@@ -707,7 +705,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startSpin(event) {
-      purgeDuplicateButtons();
+      purgeDuplicateButtons('start');
 
       if (!slotBtn) {
         return;
@@ -754,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         slotBtn.disabled = false;
         slotBtn.classList.remove('is-busy');
-        logDuplicateButtonsIfAny();
+        enforceSingleSlotButton('spin:complete', container);
       });
     }
 
