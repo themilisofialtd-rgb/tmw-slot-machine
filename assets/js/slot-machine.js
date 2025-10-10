@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const assetsBaseUrl = resolveAssetsBaseUrl();
-    const btn = container.querySelector('.tmw-spin-btn');
+    let btn = container.querySelector('.tmw-spin-btn');
     const reels = container.querySelectorAll('.reel');
     const result = container.querySelector('.tmw-result');
     const reelsContainer = container.querySelector('.slot-reels, .tmw-reels');
@@ -68,36 +68,48 @@ document.addEventListener('DOMContentLoaded', function() {
       claimResetHandler = null;
     };
 
-    const resetSpinButton = () => {
+    function resetSpinButton(targetBtn = btn) {
       clearClaimResetTimeout();
       detachClaimResetListeners();
       currentOfferLink = '';
 
-      if (!btn) {
+      const buttonEl = targetBtn || btn;
+      if (!buttonEl) {
         return;
       }
 
-      btn.dataset.mode = 'spin';
-      btn.classList.remove('claim');
+      btn = buttonEl;
+
+      buttonEl.dataset.mode = 'spin';
+      buttonEl.classList.remove('claim');
+      buttonEl.classList.remove('spin-again');
 
       if (hasShownWin) {
-        btn.classList.add('spin-again');
-        btn.textContent = SPIN_AGAIN_LABEL;
+        buttonEl.textContent = SPIN_AGAIN_LABEL;
+        buttonEl.classList.add('spin-again');
       } else if (initialButtonContent) {
-        btn.classList.remove('spin-again');
-        btn.innerHTML = initialButtonContent;
+        buttonEl.innerHTML = initialButtonContent;
       } else {
-        btn.classList.add('spin-again');
-        btn.textContent = SPIN_AGAIN_LABEL;
+        buttonEl.textContent = SPIN_AGAIN_LABEL;
+        buttonEl.classList.add('spin-again');
       }
-    };
 
-    const scheduleClaimReset = () => {
+      buttonEl.disabled = false;
+      buttonEl.onclick = handleSpinClick;
+    }
+
+    const scheduleClaimReset = (targetBtn = btn) => {
       clearClaimResetTimeout();
+
+      const buttonRef = targetBtn || btn;
 
       claimResetTimeoutId = window.setTimeout(() => {
         claimResetTimeoutId = null;
-        resetSpinButton();
+
+        const activeBtn = buttonRef || btn;
+        if (activeBtn && !activeBtn.classList.contains('spin-again')) {
+          resetSpinButton(activeBtn);
+        }
       }, 5000);
     };
 
@@ -109,7 +121,9 @@ document.addEventListener('DOMContentLoaded', function() {
       detachClaimResetListeners();
 
       claimResetHandler = () => {
-        resetSpinButton();
+        if (btn) {
+          resetSpinButton(btn);
+        }
       };
 
       claimResetEvents.forEach(eventName => {
@@ -136,8 +150,9 @@ document.addEventListener('DOMContentLoaded', function() {
       btn.classList.remove('spin-again');
       btn.classList.add('claim');
       btn.textContent = CLAIM_LABEL;
+      btn.onclick = handleClaimClick;
 
-      scheduleClaimReset();
+      scheduleClaimReset(btn);
       attachClaimResetListeners();
     };
 
@@ -533,23 +548,43 @@ document.addEventListener('DOMContentLoaded', function() {
       }, spinDuration + frameInterval);
     };
 
-    btn.addEventListener('click', event => {
-      if (btn.dataset.mode === 'claim') {
+    function handleClaimClick(event) {
+      if (event && typeof event.preventDefault === 'function') {
         event.preventDefault();
+      }
 
-        if (currentOfferLink) {
-          window.open(currentOfferLink, '_blank', 'noopener');
-        }
-
-        resetSpinButton();
+      const targetBtn = event && event.currentTarget ? event.currentTarget : btn;
+      if (!targetBtn) {
         return;
       }
+
+      btn = targetBtn;
+
+      if (currentOfferLink) {
+        window.open(currentOfferLink, '_blank', 'noopener');
+      }
+
+      resetSpinButton(targetBtn);
+    }
+
+    function handleSpinClick(event) {
+      const targetBtn = event && event.currentTarget ? event.currentTarget : btn;
+      if (!targetBtn) {
+        return;
+      }
+
+      if (targetBtn.dataset.mode === 'claim') {
+        handleClaimClick(event);
+        return;
+      }
+
+      btn = targetBtn;
 
       stopResultFlash();
       clearClaimResetTimeout();
       detachClaimResetListeners();
       currentOfferLink = '';
-      btn.disabled = true;
+      targetBtn.disabled = true;
       resetForSpin();
       stopWinSound();
       setRandomIconsOnReels(reelList);
@@ -575,9 +610,13 @@ document.addEventListener('DOMContentLoaded', function() {
           playTone(260, 0.2);
         }
 
-        btn.disabled = false;
+        targetBtn.disabled = false;
       });
-    });
+    }
+
+    if (btn) {
+      btn.onclick = handleSpinClick;
+    }
   });
 });
 
