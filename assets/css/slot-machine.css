@@ -183,55 +183,68 @@
   animation: none; /* stops flashing while hovered */
 }
 
-/* === MOBILE FIX === */
+/* === MOBILE COMPACT FIX === */
 @media (max-width: 700px) {
   .slot-body {
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    text-align: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 0;
   }
 
-  /* Scale down the button */
+  /* Place reels above the button */
+  .slot-center {
+    order: 1;
+    margin-bottom: 5px;
+  }
+
+  .slot-left {
+    order: 2;
+    margin: 0;
+  }
+
+  /* Shrink button size to fit tighter */
   .slot-spin {
-    padding: 8px 30px;
+    padding: 8px 28px;
     font-size: 14px;
-    min-width: 130px;
-    border-radius: 40px;
-    transform: scale(0.9);
+    min-width: 120px;
+    border-radius: 35px;
+    transform: none;
+    margin-top: 6px;
   }
 
-  /* Adjust reels spacing and size */
-  .slot-reels {
-    gap: 10px;
-    margin: 6px 0;
-  }
-
+  /* Reels smaller and closer together */
   .reel {
     width: 70px;
     height: 70px;
+    margin: 0;
   }
 
-  /* Resize text and glow for smaller screen */
+  .slot-reels {
+    gap: 8px;
+  }
+
+  /* Compact headline spacing */
   .slot-headline {
     font-size: 17px;
     margin-bottom: 6px;
   }
 
+  /* Reduce extra spacing below offer and sound */
   .slot-result {
     font-size: 15px;
+    margin-top: 4px;
   }
 
-  /* Keep sound toggle close to result */
   .slot-sound-toggle {
-    margin-top: 2px;
     font-size: 12px;
+    margin-top: 2px;
   }
 
-  /* Prevent banner from overexpanding */
+  /* Compact glow box */
   .tmw-slot-machine {
-    max-width: 100%;
     padding: 10px;
-    box-shadow: 0 0 16px rgba(255, 0, 60, 0.8);
+    box-shadow: 0 0 16px rgba(255, 0, 60, 0.85);
   }
 }
