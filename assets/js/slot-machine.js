@@ -1,70 +1,18 @@
 const SLOT_BUTTON_ID = 'tmw-slot-btn';
 const SLOT_BUTTON_CLASS = 'slot-btn';
-let slotBtn = document.getElementById(SLOT_BUTTON_ID);
+const slotContainer = document.querySelector('.slot-container');
+const slotBtn = document.getElementById(SLOT_BUTTON_ID);
 
-function enforceSingleSlotButton(context = 'runtime', scope) {
-  const searchRoot = scope instanceof Element ? scope : document;
-  const allButtons = Array.from(searchRoot.querySelectorAll(`.${SLOT_BUTTON_CLASS}`));
-  if (!allButtons.length) {
-    slotBtn = document.getElementById(SLOT_BUTTON_ID);
-    return [];
-  }
+const cleanupSlotButtons = () => {
+  document
+    .querySelectorAll('.slot-container .slot-btn:not(#tmw-slot-btn)')
+    .forEach(button => button.remove());
+};
 
-  let canonicalButton = searchRoot.querySelector(`#${SLOT_BUTTON_ID}`) || allButtons[0];
-  if (canonicalButton && !canonicalButton.id) {
-    canonicalButton.id = SLOT_BUTTON_ID;
-  }
-
-  if (canonicalButton && allButtons[0] !== canonicalButton && canonicalButton.parentNode) {
-    canonicalButton.parentNode.insertBefore(canonicalButton, canonicalButton.parentNode.firstChild);
-  }
-
-  const buttonsForCheck = Array.from(searchRoot.querySelectorAll(`.${SLOT_BUTTON_CLASS}`));
-  let duplicatesRemoved = false;
-  const removedButtons = [];
-  buttonsForCheck.forEach((button, index) => {
-    if (!canonicalButton && index === 0) {
-      canonicalButton = button;
-      if (!canonicalButton.id) {
-        canonicalButton.id = SLOT_BUTTON_ID;
-      }
-      return;
-    }
-
-    if (button !== canonicalButton && index > 0) {
-      if (!duplicatesRemoved) {
-        logSlotState(`conflict|${context}`);
-      }
-      duplicatesRemoved = true;
-      if (button && button.parentNode) {
-        button.parentNode.removeChild(button);
-      }
-      removedButtons.push(button);
-    }
-  });
-
-  if (duplicatesRemoved) {
-    console.warn(`[TMW Slot Machine] Duplicate slot button removed (${context}).`, removedButtons);
-    logSlotState(`duplicate_auto_removed|${context}`);
-  }
-
-  slotBtn = document.getElementById(SLOT_BUTTON_ID) || canonicalButton || null;
-  return [canonicalButton].filter(Boolean);
-}
-
-function purgeDuplicateButtons(context = 'purge') {
-  const beforeCount = document.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length;
-  enforceSingleSlotButton(context);
-  const afterCount = document.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length;
-  if (beforeCount > 1 && afterCount === 1) {
-    logSlotState('cleanup');
-  }
-}
-
-enforceSingleSlotButton('bootstrap');
+cleanupSlotButtons();
 
 document.addEventListener('DOMContentLoaded', function() {
-  enforceSingleSlotButton('dom-ready');
+  cleanupSlotButtons();
 
   const containers = document.querySelectorAll('.tmw-slot-machine');
   if (!containers.length) {
@@ -102,13 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const reelsContainer = container.querySelector('.slot-reels, .tmw-reels');
     const soundToggle = container.querySelector('.tmw-sound-toggle');
 
-    enforceSingleSlotButton('container-init', container);
-
     if (!slotBtn || !reels.length || !result || !soundToggle) {
       return;
     }
 
-    enforceSingleSlotButton('post-init', container);
+    cleanupSlotButtons();
 
     result.classList.add('slot-result');
 
@@ -131,8 +77,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      enforceSingleSlotButton(state, container);
-      const buttonCount = document.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length;
+      cleanupSlotButtons();
+      const localSlotContainer = container.querySelector('.slot-container') || slotContainer;
+      const buttonCount = localSlotContainer
+        ? localSlotContainer.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length
+        : 0;
       const diagnostic = `${state}|buttons=${buttonCount}|disabled=${disabled ? '1' : '0'}|valid=${buttonCount === 1 ? 'ok' : 'dup'}`;
       logSlotState(diagnostic);
     };
@@ -140,16 +89,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateButtonState(state, options = {}) {
       const { disabled = false, focus = false } = options;
 
-      enforceSingleSlotButton(`update:${state}`, container);
-
-      slotBtn = document.getElementById(SLOT_BUTTON_ID) || slotBtn;
+      cleanupSlotButtons();
 
       if (!slotBtn || !container.contains(slotBtn)) {
-        const [fallbackBtn] = enforceSingleSlotButton(`rehydrate:${state}`, container);
-        slotBtn = fallbackBtn || null;
-      }
-
-      if (!slotBtn) {
         return;
       }
 
@@ -196,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       validateAndLogState(state, { disabled });
-      enforceSingleSlotButton(`post-update:${state}`, container);
+      cleanupSlotButtons();
     }
 
     const clearClaimResetTimeout = () => {
@@ -219,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function resetSpinButton(options = {}) {
-      purgeDuplicateButtons('reset');
+      cleanupSlotButtons();
 
       clearClaimResetTimeout();
       detachClaimResetListeners();
@@ -231,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const nextState = hasCompletedSpin ? BUTTON_STATES.RESET : BUTTON_STATES.SPIN;
       updateButtonState(nextState, options);
-      enforceSingleSlotButton('reset:post', container);
+      cleanupSlotButtons();
     }
 
     const scheduleClaimReset = () => {
@@ -288,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       scheduleClaimReset();
       attachClaimResetListeners();
-      enforceSingleSlotButton('claim:post', container);
+      cleanupSlotButtons();
     };
 
     if (slotBtn) {
@@ -705,7 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startSpin(event) {
-      purgeDuplicateButtons('start');
+      cleanupSlotButtons();
 
       if (!slotBtn) {
         return;
@@ -752,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         slotBtn.disabled = false;
         slotBtn.classList.remove('is-busy');
-        enforceSingleSlotButton('spin:complete', container);
+        cleanupSlotButtons();
       });
     }
 
