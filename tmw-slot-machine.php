@@ -125,6 +125,9 @@ function tmw_slot_log_callback() {
     if ($state === 'conflict') {
         error_log('[SlotMachine] Duplicate button detected and hidden.');
     }
+    if ($state === 'duplicate_removed') {
+        error_log('[SlotMachine] Duplicate Claim Bonus node auto-removed.');
+    }
     error_log('[SlotMachine] UI State: ' . $state);
     wp_die();
 }
