@@ -107,6 +107,73 @@ document.addEventListener('DOMContentLoaded', function() {
       'value.png'
     ];
 
+    const showFallbackWinMessage = () => {
+      if (!result) {
+        return;
+      }
+
+      result.textContent = 'You Win!';
+      void result.offsetWidth;
+      result.classList.add('show');
+    };
+
+    const updateWinMessage = (messageText, linkUrl) => {
+      if (!result) {
+        return false;
+      }
+
+      const parentSlot = result.closest('.tmw-slot-machine');
+      if (!parentSlot) {
+        return false;
+      }
+
+      const trimmedUrl = typeof linkUrl === 'string' ? linkUrl.trim() : '';
+      if (!trimmedUrl) {
+        return false;
+      }
+
+      const displayMessage = (typeof messageText === 'string' && messageText.trim())
+        ? messageText.trim()
+        : '🎉 You Win!';
+
+      try {
+        let winContainer = result.querySelector('.tmw-win-message');
+
+        if (!winContainer) {
+          winContainer = document.createElement('div');
+          winContainer.className = 'tmw-win-message';
+        }
+
+        winContainer.textContent = '';
+
+        const textNode = document.createTextNode(`${displayMessage} `);
+        winContainer.appendChild(textNode);
+
+        const linkEl = document.createElement('a');
+        linkEl.className = 'tmw-claim-bonus';
+        linkEl.target = '_blank';
+        linkEl.rel = 'nofollow noopener';
+        linkEl.textContent = 'Claim Your Bonus';
+        linkEl.href = trimmedUrl;
+        winContainer.appendChild(linkEl);
+
+        if (!result.contains(winContainer)) {
+          result.innerHTML = '';
+          result.appendChild(winContainer);
+        } else {
+          Array.from(result.children).forEach(child => {
+            if (child !== winContainer) {
+              child.remove();
+            }
+          });
+        }
+
+        return true;
+      } catch (error) {
+        return false;
+      }
+    };
+
     const showOfferMessage = iconName => {
       if (!result) {
         return;
@@ -116,39 +183,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const offerIndex = offerMap.indexOf(iconName);
       if (offerIndex === -1 || !offersData[offerIndex]) {
-        result.textContent = 'You Win!';
-        result.classList.add('show');
+        showFallbackWinMessage();
         return;
       }
 
       const { title, url } = offersData[offerIndex];
       if (!title || !url) {
-        result.textContent = 'You Win!';
-        result.classList.add('show');
+        showFallbackWinMessage();
         return;
       }
 
-      const escapeHtml = value => String(value).replace(/[&<>"']/g, match => {
-        switch (match) {
-          case '&':
-            return '&amp;';
-          case '<':
-            return '&lt;';
-          case '>':
-            return '&gt;';
-          case '"':
-            return '&quot;';
-          case "'":
-            return '&#39;';
-          default:
-            return match;
-        }
-      });
+      const trimmedTitle = String(title).trim();
+      const messageText = trimmedTitle ? `🎉 You Win ${trimmedTitle}!` : '🎉 You Win!';
 
-      const escapedTitle = escapeHtml(title);
-      const escapedUrl = escapeHtml(url);
-      result.innerHTML = `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" class="slot-offer-link">${escapedTitle}</a>`;
-      // Trigger reflow for repeated animations
+      const wasUpdated = updateWinMessage(messageText, url);
+      if (!wasUpdated) {
+        showFallbackWinMessage();
+        return;
+      }
+
       void result.offsetWidth;
       result.classList.add('show');
     };
