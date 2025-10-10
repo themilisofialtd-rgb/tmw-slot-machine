@@ -70,7 +70,7 @@
   justify-content: center;
   gap: 10px;
   position: relative;
-  z-index: 1;
+  z-index: 5;
   line-height: 1;
 }
 
@@ -119,6 +119,11 @@
 .slot-btn.spin-again {
   background: linear-gradient(180deg, #ff0000 0%, #b90000 100%);
   box-shadow: 0 0 14px rgba(255, 0, 0, 0.6);
+}
+
+/* Hide any unexpected duplicate buttons */
+.slot-container button:not(:first-of-type) {
+  display: none !important;
 }
 
 /* === REELS === */
