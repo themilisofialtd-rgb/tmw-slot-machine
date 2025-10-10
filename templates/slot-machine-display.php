@@ -13,12 +13,22 @@ if (!is_string($trigger_headline) || $trigger_headline === '') {
 ?>
 <div class="tmw-slot-machine" data-win-rate="<?php echo esc_attr($win_rate); ?>" data-sound-default="<?php echo esc_attr($sound_default); ?>" data-offers="<?php echo $offers_json; ?>" style="--tmw-accent-color: <?php echo esc_attr($accent_color); ?>;">
   <div class="slot-headline"><?php echo esc_html($trigger_headline); ?></div>
-  <div class="tmw-reels">
-    <div class="reel"></div>
-    <div class="reel"></div>
-    <div class="reel"></div>
+  <div class="slot-body">
+    <div class="slot-left">
+      <button class="tmw-spin-btn slot-spin">SPIN NOW 🎰</button>
+    </div>
+
+    <div class="slot-center">
+      <div class="tmw-reels slot-reels">
+        <div class="reel"></div>
+        <div class="reel"></div>
+        <div class="reel"></div>
+      </div>
+      <div class="tmw-sound-toggle slot-sound-toggle">🔇 Enable Sound</div>
+    </div>
+
+    <div class="slot-right">
+      <div class="tmw-result slot-result"></div>
+    </div>
   </div>
-  <button class="tmw-spin-btn">SPIN NOW 🎰</button>
-  <div class="tmw-result"></div>
-  <div class="tmw-sound-toggle">🔇 Enable Sound</div>
 </div>
