@@ -183,20 +183,55 @@
   animation: none; /* stops flashing while hovered */
 }
 
-/* === MOBILE === */
+/* === MOBILE FIX === */
 @media (max-width: 700px) {
   .slot-body {
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
   }
 
-  .slot-result {
-    text-align: center;
-    white-space: normal;
+  /* Scale down the button */
+  .slot-spin {
+    padding: 8px 30px;
+    font-size: 14px;
+    min-width: 130px;
+    border-radius: 40px;
+    transform: scale(0.9);
+  }
+
+  /* Adjust reels spacing and size */
+  .slot-reels {
+    gap: 10px;
+    margin: 6px 0;
   }
 
   .reel {
-    width: 75px;
-    height: 75px;
+    width: 70px;
+    height: 70px;
+  }
+
+  /* Resize text and glow for smaller screen */
+  .slot-headline {
+    font-size: 17px;
+    margin-bottom: 6px;
+  }
+
+  .slot-result {
+    font-size: 15px;
+  }
+
+  /* Keep sound toggle close to result */
+  .slot-sound-toggle {
+    margin-top: 2px;
+    font-size: 12px;
+  }
+
+  /* Prevent banner from overexpanding */
+  .tmw-slot-machine {
+    max-width: 100%;
+    padding: 10px;
+    box-shadow: 0 0 16px rgba(255, 0, 60, 0.8);
   }
 }
