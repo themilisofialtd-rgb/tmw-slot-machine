@@ -27,11 +27,11 @@ if (!is_string($trigger_headline) || $trigger_headline === '') {
         <div class="reel"></div>
         <div class="reel"></div>
       </div>
-      <div class="tmw-sound-toggle slot-sound-toggle">🔇 Enable Sound</div>
     </div>
 
     <div class="slot-right">
       <div class="tmw-result slot-result"></div>
+      <div class="tmw-sound-toggle slot-sound-toggle">🔊 Sound On</div>
     </div>
   </div>
 </div>

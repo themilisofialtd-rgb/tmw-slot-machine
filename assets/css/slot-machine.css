@@ -40,13 +40,13 @@
 /* Inline banner layout – perfectly aligned */
 .slot-body {
   display: flex;
-  align-items: center;        /* vertically align all items */
+  align-items: center;
   justify-content: center;
-  gap: 20px;                  /* tighter spacing */
+  gap: 25px;
   width: 100%;
   max-width: 970px;
   margin: 0 auto;
-  padding: 0;                 /* remove top/bottom padding */
+  padding: 0;
 }
 
 /* Left, center, right zones */
@@ -59,11 +59,21 @@
 }
 
 .slot-left { flex: 0 0 140px; }
-.slot-center { flex: 0 0 auto; flex-direction: column; }
+.slot-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
 .slot-right {
-  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  flex: 0 0 220px;
   text-align: left;
   line-height: 1.2;
+  gap: 6px;
 }
 
 /* Reels aligned to button height */
@@ -151,12 +161,17 @@
   text-decoration: underline;
 }
 
-/* Sound toggle under reels */
+/* Sound toggle style (inline) */
 .slot-sound-toggle {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 4px;
+  font-size: 13px;
+  color: #bbb;
   cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.slot-sound-toggle:hover {
+  opacity: 1;
 }
 
 @keyframes pulseGlow {
