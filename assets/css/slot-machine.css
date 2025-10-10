@@ -248,3 +248,78 @@
     box-shadow: 0 0 16px rgba(255, 0, 60, 0.85);
   }
 }
+/* === MOBILE PERFECT SLOT LAYOUT === */
+@media (max-width: 700px) {
+  .slot-body {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0;
+    text-align: center;
+  }
+
+  /* Order: reels → button → text → sound */
+  .slot-center { order: 1; margin: 0; }
+  .slot-left   { order: 2; margin: 0 !important; height: auto !important; background: transparent !important; }
+  .slot-right  { order: 3; align-items: center; text-align: center; gap: 4px; }
+
+  /* Reels */
+  .slot-reels {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .reel {
+    width: 75px;
+    height: 75px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  /* Spin button (centered under reels) */
+  .slot-spin {
+    margin-top: 5px;
+    padding: 9px 36px;
+    font-size: 15px;
+    border-radius: 45px;
+    background: var(--tmw-accent-color, #ff3366);
+    box-shadow: 0 0 12px rgba(255, 51, 102, 0.8);
+    transform: none;
+  }
+
+  /* Offer text + sound */
+  .slot-result {
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--tmw-accent-color, #ff3366);
+    text-align: center;
+    animation: heartbeatWin 1.4s infinite ease-in-out;
+  }
+
+  .slot-sound-toggle {
+    font-size: 13px;
+    margin-top: 3px;
+    color: #ccc;
+    opacity: 0.9;
+  }
+
+  /* Keep container glow tight */
+  .tmw-slot-machine {
+    max-width: 100%;
+    padding: 10px;
+    box-shadow: 0 0 18px rgba(255, 0, 60, 0.9);
+    border-radius: 10px;
+  }
+
+  /* Heartbeat animation for link text */
+  @keyframes heartbeatWin {
+    0%, 100% { color: #ff3366; text-shadow: 0 0 6px rgba(255,51,102,0.8); transform: scale(1); }
+    50% { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,1); transform: scale(1.05); }
+  }
+}
