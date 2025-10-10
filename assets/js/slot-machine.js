@@ -39,6 +39,110 @@ document.addEventListener('DOMContentLoaded', function() {
 
     result.classList.add('slot-result');
 
+    const slotInteractionArea = container.querySelector('.slot-body') || container;
+    const CLAIM_LABEL = '🎁 Claim Your Bonus';
+    const SPIN_AGAIN_LABEL = '🔁 Spin Again';
+    const claimResetEvents = ['mouseenter', 'touchstart', 'click', 'focusin'];
+    const initialButtonContent = btn ? btn.innerHTML : '';
+    let claimResetHandler = null;
+    let claimResetTimeoutId = null;
+    let currentOfferLink = '';
+    let hasShownWin = false;
+
+    const clearClaimResetTimeout = () => {
+      if (claimResetTimeoutId) {
+        clearTimeout(claimResetTimeoutId);
+        claimResetTimeoutId = null;
+      }
+    };
+
+    const detachClaimResetListeners = () => {
+      if (!slotInteractionArea || !claimResetHandler) {
+        return;
+      }
+
+      claimResetEvents.forEach(eventName => {
+        slotInteractionArea.removeEventListener(eventName, claimResetHandler, false);
+      });
+
+      claimResetHandler = null;
+    };
+
+    const resetSpinButton = () => {
+      clearClaimResetTimeout();
+      detachClaimResetListeners();
+      currentOfferLink = '';
+
+      if (!btn) {
+        return;
+      }
+
+      btn.dataset.mode = 'spin';
+      btn.classList.remove('claim');
+
+      if (hasShownWin) {
+        btn.classList.add('spin-again');
+        btn.textContent = SPIN_AGAIN_LABEL;
+      } else if (initialButtonContent) {
+        btn.classList.remove('spin-again');
+        btn.innerHTML = initialButtonContent;
+      } else {
+        btn.classList.add('spin-again');
+        btn.textContent = SPIN_AGAIN_LABEL;
+      }
+    };
+
+    const scheduleClaimReset = () => {
+      clearClaimResetTimeout();
+
+      claimResetTimeoutId = window.setTimeout(() => {
+        claimResetTimeoutId = null;
+        resetSpinButton();
+      }, 5000);
+    };
+
+    const attachClaimResetListeners = () => {
+      if (!slotInteractionArea) {
+        return;
+      }
+
+      detachClaimResetListeners();
+
+      claimResetHandler = () => {
+        resetSpinButton();
+      };
+
+      claimResetEvents.forEach(eventName => {
+        slotInteractionArea.addEventListener(eventName, claimResetHandler, { once: true });
+      });
+    };
+
+    const activateClaimButton = linkUrl => {
+      const trimmedLink = typeof linkUrl === 'string' ? linkUrl.trim() : '';
+
+      currentOfferLink = trimmedLink;
+
+      if (!btn) {
+        return;
+      }
+
+      if (!trimmedLink) {
+        resetSpinButton();
+        return;
+      }
+
+      hasShownWin = true;
+      btn.dataset.mode = 'claim';
+      btn.classList.remove('spin-again');
+      btn.classList.add('claim');
+      btn.textContent = CLAIM_LABEL;
+
+      scheduleClaimReset();
+      attachClaimResetListeners();
+    };
+
+    btn.dataset.mode = 'spin';
+
     const resetForSpin = () => {
       if (result) {
         result.classList.remove('show', 'win-text', 'revealed');
@@ -152,6 +256,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       result.textContent = 'You Win!';
+      hasShownWin = true;
+      resetSpinButton();
       animateWinReveal();
     };
 
@@ -281,11 +387,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const trimmedTitle = String(title).trim();
       const messageText = trimmedTitle ? `🎉 You Win ${trimmedTitle}!` : '🎉 You Win!';
+      const trimmedUrl = typeof url === 'string' ? url.trim() : '';
 
       const wasUpdated = updateWinMessage(messageText, url);
       if (!wasUpdated) {
         showFallbackWinMessage();
         return;
+      }
+
+      if (trimmedUrl) {
+        activateClaimButton(trimmedUrl);
+      } else {
+        resetSpinButton();
       }
 
       animateWinReveal();
@@ -420,8 +533,22 @@ document.addEventListener('DOMContentLoaded', function() {
       }, spinDuration + frameInterval);
     };
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', event => {
+      if (btn.dataset.mode === 'claim') {
+        event.preventDefault();
+
+        if (currentOfferLink) {
+          window.open(currentOfferLink, '_blank', 'noopener');
+        }
+
+        resetSpinButton();
+        return;
+      }
+
       stopResultFlash();
+      clearClaimResetTimeout();
+      detachClaimResetListeners();
+      currentOfferLink = '';
       btn.disabled = true;
       resetForSpin();
       stopWinSound();

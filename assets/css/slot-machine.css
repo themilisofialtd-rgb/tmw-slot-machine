@@ -82,6 +82,16 @@
   line-height: 1;
 }
 
+.slot-btn.claim {
+  background: linear-gradient(180deg, #ff7a00 0%, #ff3c00 100%);
+  box-shadow: 0 0 14px rgba(255, 94, 0, 0.6);
+}
+
+.slot-btn.spin-again {
+  background: linear-gradient(180deg, #ff0000 0%, #b90000 100%);
+  box-shadow: 0 0 14px rgba(255, 0, 0, 0.6);
+}
+
 /* === REELS === */
 .slot-center {
   display: flex;
