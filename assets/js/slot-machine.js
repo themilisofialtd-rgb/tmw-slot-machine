@@ -1,3 +1,16 @@
+function purgeDuplicateButtons() {
+  const buttons = document.querySelectorAll('.slot-btn');
+  if (buttons.length > 1) {
+    for (let i = 1; i < buttons.length; i++) {
+      const extraButton = buttons[i];
+      if (extraButton && extraButton.parentNode) {
+        extraButton.remove();
+      }
+    }
+    logSlotState('cleanup');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   const containers = document.querySelectorAll('.tmw-slot-machine');
   if (!containers.length) {
@@ -193,11 +206,14 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function resetSpinButton(targetBtn = btn, options = {}) {
+      purgeDuplicateButtons();
+
       clearClaimResetTimeout();
       detachClaimResetListeners();
       currentOfferLink = '';
 
-      const buttonEl = targetBtn || btn;
+      const canonicalButton = container.querySelector('.slot-btn');
+      const buttonEl = canonicalButton || targetBtn || btn;
       if (!buttonEl) {
         return;
       }
@@ -679,7 +695,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function startSpin(event) {
-      const targetBtn = event && event.currentTarget ? event.currentTarget : btn;
+      purgeDuplicateButtons();
+
+      const canonicalButton = container.querySelector('.slot-btn');
+
+      let targetBtn = event && event.currentTarget ? event.currentTarget : btn;
+
+      if (canonicalButton) {
+        targetBtn = canonicalButton;
+      }
+
       if (!targetBtn) {
         return;
       }
