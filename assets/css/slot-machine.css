@@ -1,69 +1,69 @@
+/* Compact banner layout */
 .tmw-slot-machine {
-  text-align: center;
+  width: 100%;
+  max-width: 970px;
+  margin: 0 auto 10px auto;
   background: #111;
+  border-radius: 8px;
+  padding: 10px 15px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   color: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px var(--tmw-accent-color, #ff003c);
-  width: 320px;
-  margin: 20px auto;
+  text-align: center;
   font-family: 'Arial', sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .tmw-branding {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--tmw-accent-color, #ff003c);
+  color: var(--tmw-accent-color, #ff3366);
+  margin-bottom: 6px;
 }
 
 .tmw-reels {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
+  align-items: center;
+  height: 140px;
+  overflow: hidden;
+  gap: 12px;
+  width: 100%;
 }
 
 .reel {
-  width: 60px;
-  height: 60px;
-  background: #222;
+  width: 80px;
+  height: 120px;
+  margin: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   border-radius: 10px;
-  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.15);
-  transition: none !important;
-  transform: none !important;
-  border: 2px solid rgba(255, 255, 255, 0.05);
-}
-
-.reel.spin {
-  animation: spin 0.4s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+  transition: background-image 0.2s ease-in-out;
 }
 
 .tmw-spin-btn {
-  background: var(--tmw-accent-color, #ff003c);
+  margin-top: 8px;
+  background: var(--tmw-accent-color, #ff3366);
   color: #fff;
   border: none;
-  padding: 10px 20px;
-  font-weight: bold;
-  border-radius: 8px;
+  padding: 10px 22px;
+  font-weight: 700;
+  border-radius: 999px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-  box-shadow: 0 0 12px rgba(255, 0, 60, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 8px 18px rgba(255, 51, 102, 0.3);
 }
 
 .tmw-spin-btn:hover:not([disabled]) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
 }
 
 .tmw-spin-btn:disabled {
@@ -71,65 +71,27 @@
   cursor: not-allowed;
 }
 
+.slot-result,
 .tmw-result {
-  margin-top: 10px;
-  font-size: 14px;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-top: 6px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--tmw-accent-color, #ff3366);
+  min-height: 28px;
+  transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+  opacity: 0;
+  transform: translateY(6px);
 }
 
-.tmw-result a {
-  color: var(--tmw-accent-color, #ff003c);
-  text-decoration: underline;
-  font-weight: bold;
-}
-
-.tmw-sound-toggle {
-  margin-top: 10px;
-  cursor: pointer;
-  font-size: 13px;
-  color: #ccc;
-}
-
-@media (max-width: 420px) {
-  .tmw-slot-machine {
-    width: auto;
-  }
-}
-
-.reel {
-  transition: none !important;
-  transform: none !important;
-}
-
-.slot-result {
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.slot-result.show {
+.slot-result.show,
+.tmw-result.show {
   opacity: 1;
   transform: translateY(0);
-  animation: slotResultFade 0.4s ease;
-}
-
-@keyframes slotResultFade {
-  0% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .slot-offer-link {
-  display: inline-block;
-  margin-top: 8px;
-  color: #ff3366;
-  font-weight: 700;
+  color: var(--tmw-accent-color, #ff3366);
   text-decoration: none;
   animation: pulseGlow 2s infinite;
 }
@@ -138,8 +100,36 @@
   text-decoration: underline;
 }
 
+.tmw-sound-toggle {
+  margin-top: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
 @keyframes pulseGlow {
-  0% { text-shadow: 0 0 5px rgba(255, 51, 102, 0.6); }
-  50% { text-shadow: 0 0 12px rgba(255, 51, 102, 1); }
-  100% { text-shadow: 0 0 5px rgba(255, 51, 102, 0.6); }
+  0% { text-shadow: 0 0 4px rgba(255, 51, 102, 0.6); }
+  50% { text-shadow: 0 0 10px rgba(255, 51, 102, 1); }
+  100% { text-shadow: 0 0 4px rgba(255, 51, 102, 0.6); }
+}
+
+/* Responsive scaling */
+@media (max-width: 600px) {
+  .tmw-slot-machine {
+    padding: 12px;
+  }
+
+  .tmw-branding {
+    font-size: 10px;
+  }
+
+  .reel {
+    width: 60px;
+    height: 90px;
+  }
+
+  .slot-result,
+  .tmw-result {
+    font-size: 14px;
+  }
 }
