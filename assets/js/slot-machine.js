@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btn = container.querySelector('.tmw-spin-btn');
     const reels = container.querySelectorAll('.reel');
     const result = container.querySelector('.tmw-result');
+    const reelsContainer = container.querySelector('.slot-reels, .tmw-reels');
     const soundToggle = container.querySelector('.tmw-sound-toggle');
 
     if (!btn || !reels.length || !result || !soundToggle) {
@@ -37,6 +38,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     result.classList.add('slot-result');
+
+    const resetForSpin = () => {
+      if (result) {
+        result.classList.remove('show', 'win-text', 'revealed');
+        result.textContent = '';
+      }
+      if (reelsContainer) {
+        reelsContainer.classList.remove('fade-out');
+      }
+    };
+
+    const animateWinReveal = () => {
+      if (reelsContainer) {
+        reelsContainer.classList.add('fade-out');
+      }
+      if (!result) {
+        return;
+      }
+      result.classList.add('win-text');
+      result.classList.remove('revealed');
+      void result.offsetWidth;
+      requestAnimationFrame(() => {
+        result.classList.add('revealed');
+      });
+      result.classList.add('show');
+    };
+
+    if (result) {
+      result.addEventListener('click', () => {
+        if (!result.classList.contains('win-text')) {
+          return;
+        }
+        result.classList.remove('revealed');
+        requestAnimationFrame(() => {
+          result.classList.add('revealed');
+        });
+      });
+    }
 
     let soundEnabled = (container.dataset.soundDefault || 'off') === 'on';
     let audioContext;
@@ -113,8 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       result.textContent = 'You Win!';
-      void result.offsetWidth;
-      result.classList.add('show');
+      animateWinReveal();
     };
 
     const updateWinMessage = (messageText, linkUrl) => {
@@ -187,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const linkEl = document.createElement('a');
-        linkEl.className = 'tmw-claim-bonus';
+        linkEl.className = 'tmw-claim-bonus slot-btn claim';
         linkEl.target = '_blank';
         linkEl.rel = 'nofollow noopener';
         linkEl.textContent = 'Claim Your Bonus';
@@ -206,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
           fallbackContainer.textContent = `${displayMessage} `;
 
           const fallbackLink = document.createElement('a');
-          fallbackLink.className = 'tmw-claim-bonus';
+          fallbackLink.className = 'tmw-claim-bonus slot-btn claim';
           fallbackLink.target = '_blank';
           fallbackLink.rel = 'nofollow noopener';
           fallbackLink.textContent = 'Claim Your Bonus';
@@ -227,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      result.classList.remove('show');
+      result.classList.remove('show', 'win-text', 'revealed');
 
       const offerIndex = offerMap.indexOf(iconName);
       if (offerIndex === -1 || !offersData[offerIndex]) {
@@ -250,8 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      void result.offsetWidth;
-      result.classList.add('show');
+      animateWinReveal();
     };
 
     const ensureAudioContext = () => {
@@ -337,31 +374,56 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      const flashes = Math.floor(Math.random() * 4) + 6; // 6–9 flashes
-      let count = 0;
+      const spinDuration = 1400;
+      const frameInterval = 110;
+      const now = (typeof performance !== 'undefined' && performance && typeof performance.now === 'function')
+        ? () => performance.now()
+        : () => Date.now();
+      const spinStart = now();
+      let spinCompleted = false;
 
-      flashIntervalId = setInterval(() => {
-        count += 1;
+      const updateReels = () => {
         reelList.forEach(reel => {
           const icon = pool[Math.floor(Math.random() * pool.length)];
           setIconOnReel(reel, icon);
         });
+      };
 
-        if (count >= flashes) {
+      const finishSpin = () => {
+        if (spinCompleted) {
+          return;
+        }
+        spinCompleted = true;
+        if (flashIntervalId) {
           clearInterval(flashIntervalId);
           flashIntervalId = null;
-          if (typeof onComplete === 'function') {
-            onComplete();
-          }
         }
-      }, 250);
+        if (typeof onComplete === 'function') {
+          onComplete();
+        }
+      };
+
+      updateReels();
+
+      flashIntervalId = setInterval(() => {
+        const elapsed = now() - spinStart;
+        if (elapsed >= spinDuration) {
+          finishSpin();
+          return;
+        }
+
+        updateReels();
+      }, frameInterval);
+
+      setTimeout(() => {
+        finishSpin();
+      }, spinDuration + frameInterval);
     };
 
     btn.addEventListener('click', () => {
       stopResultFlash();
       btn.disabled = true;
-      result.textContent = '';
-      result.classList.remove('show');
+      resetForSpin();
       stopWinSound();
       setRandomIconsOnReels(reelList);
       reels.forEach(reel => reel.classList.add('spin'));
@@ -381,7 +443,8 @@ document.addEventListener('DOMContentLoaded', function() {
           playWinSound();
         } else {
           result.textContent = 'Try Again!';
-          result.classList.remove('show');
+          result.classList.remove('win-text', 'revealed');
+          result.classList.add('show');
           playTone(260, 0.2);
         }
 
