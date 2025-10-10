@@ -134,6 +134,51 @@
   opacity: 1;
 }
 
+.tmw-win-message {
+  font-size: 1.2rem;
+  color: #ff007a;
+  text-align: center;
+  margin-top: 10px;
+  animation: pulseText 1.5s infinite;
+}
+
+.tmw-claim-bonus {
+  display: inline-block;
+  margin-left: 8px;
+  background: linear-gradient(90deg, #ff007a, #ff9c00);
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  animation: heartbeat 1.2s infinite;
+  box-shadow: 0 0 10px rgba(255, 0, 122, 0.6);
+}
+
+@keyframes pulseText {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  75% {
+    transform: scale(1.05);
+  }
+}
+
 .slot-sound-toggle {
   font-size: 14px;
   color: #bbb;
