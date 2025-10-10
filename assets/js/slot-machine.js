@@ -1,4 +1,4 @@
-const slotBtn = document.getElementById('tmw-slot-btn');
+let slotBtn = document.getElementById('tmw-slot-btn');
 
 document.querySelectorAll('.slot-btn.claim:not(#tmw-slot-btn)').forEach(element => {
   if (element && element.parentNode) {
@@ -7,6 +7,10 @@ document.querySelectorAll('.slot-btn.claim:not(#tmw-slot-btn)').forEach(element 
 });
 
 function purgeDuplicateButtons() {
+  if (!slotBtn || !document.body.contains(slotBtn)) {
+    slotBtn = document.getElementById('tmw-slot-btn');
+  }
+
   if (!slotBtn) {
     return;
   }
@@ -108,45 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
       CLAIM: 'claim',
       RESET: 'reset'
     };
-    const SPIN_LABEL = 'Spin Now';
-    const SPIN_ICON = '🎰';
-    const CLAIM_LABEL = 'Claim Your Bonus';
-    const CLAIM_ICON = '🎁';
-    const SPIN_AGAIN_LABEL = 'Spin Again';
-    const SPIN_AGAIN_ICON = '🔁';
     let claimResetHandler = null;
     let claimResetTimeoutId = null;
-    let currentOfferLink = '';
+    let resultLink = '';
     let hasShownWin = false;
     let hasCompletedSpin = false;
-    let buttonClickHandler = null;
     let currentButtonState = BUTTON_STATES.SPIN;
-
-    const setButtonClickHandler = handler => {
-      if (!slotBtn) {
-        return;
-      }
-
-      if (buttonClickHandler) {
-        slotBtn.removeEventListener('click', buttonClickHandler);
-      }
-
-      buttonClickHandler = handler || null;
-
-      if (buttonClickHandler) {
-        slotBtn.addEventListener('click', buttonClickHandler);
-      }
-    };
-
-    const renderButtonContent = (label, icon) => {
-      if (!slotBtn) {
-        return;
-      }
-
-      const labelText = typeof label === 'string' ? label.trim() : '';
-      const iconText = typeof icon === 'string' ? icon.trim() : '';
-      slotBtn.textContent = iconText ? `${labelText} ${iconText}`.trim() : labelText;
-    };
 
     const validateAndLogState = (state, { disabled } = {}) => {
       if (!container) {
@@ -159,36 +130,60 @@ document.addEventListener('DOMContentLoaded', function() {
       logSlotState(diagnostic);
     };
 
-    const updateButtonState = (state, options = {}) => {
+    function updateButtonState(state, options = {}) {
+      const { disabled = false, focus = false } = options;
+
+      let removedDuplicates = false;
+      document.querySelectorAll('.slot-container .slot-btn:not(#tmw-slot-btn)').forEach(button => {
+        removedDuplicates = true;
+        button.remove();
+      });
+
+      const btn = document.getElementById('tmw-slot-btn');
+      if (!btn) {
+        slotBtn = null;
+        return;
+      }
+
+      btn.className = 'slot-btn';
+      const cloned = btn.cloneNode(true);
+      btn.replaceWith(cloned);
+
+      const newBtn = document.getElementById('tmw-slot-btn') || document.querySelector('.slot-btn');
+      slotBtn = newBtn || null;
+
       if (!slotBtn) {
         return;
       }
 
-      const { disabled = false, focus = false } = options;
+      if (!slotBtn.id) {
+        slotBtn.id = 'tmw-slot-btn';
+      }
 
       currentButtonState = state;
 
+      slotBtn.className = 'slot-btn';
       slotBtn.dataset.mode = state;
       slotBtn.dataset.state = state;
-      slotBtn.classList.remove('claim', 'spin-again', 'spin', 'is-active', 'is-busy');
       slotBtn.disabled = Boolean(disabled);
+      slotBtn.onclick = null;
 
       switch (state) {
         case BUTTON_STATES.CLAIM:
-          renderButtonContent(CLAIM_LABEL, CLAIM_ICON);
+          slotBtn.textContent = '🎁 Claim Your Bonus';
           slotBtn.classList.add('claim');
-          setButtonClickHandler(handleClaimClick);
+          slotBtn.onclick = handleClaimClick;
           break;
         case BUTTON_STATES.RESET:
-          renderButtonContent(SPIN_AGAIN_LABEL, SPIN_AGAIN_ICON);
-          slotBtn.classList.add('spin-again');
-          setButtonClickHandler(startSpin);
+          slotBtn.textContent = '🔁 Spin Again';
+          slotBtn.classList.add('reset', 'spin-again');
+          slotBtn.onclick = startSpin;
           break;
         case BUTTON_STATES.SPIN:
         default:
-          renderButtonContent(SPIN_LABEL, SPIN_ICON);
+          slotBtn.textContent = '🎰 Spin Now';
           slotBtn.classList.add('spin');
-          setButtonClickHandler(startSpin);
+          slotBtn.onclick = startSpin;
           break;
       }
 
@@ -199,7 +194,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       validateAndLogState(state, { disabled });
-    };
+
+      const count = document.querySelectorAll('.slot-btn').length;
+      if (count > 1 || removedDuplicates) {
+        logSlotState('duplicate_removed');
+      }
+    }
 
     const clearClaimResetTimeout = () => {
       if (claimResetTimeoutId) {
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       clearClaimResetTimeout();
       detachClaimResetListeners();
-      currentOfferLink = '';
+      resultLink = '';
 
       if (!slotBtn) {
         return;
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const activateClaimButton = linkUrl => {
       const trimmedLink = typeof linkUrl === 'string' ? linkUrl.trim() : '';
 
-      currentOfferLink = trimmedLink;
+      resultLink = trimmedLink;
 
       if (!slotBtn) {
         return;
@@ -699,8 +699,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      if (currentOfferLink) {
-        window.open(currentOfferLink, '_blank', 'noopener');
+      if (resultLink) {
+        window.open(resultLink, '_blank', 'noopener');
       }
 
       resetSpinButton({ focus: true });
@@ -721,7 +721,7 @@ document.addEventListener('DOMContentLoaded', function() {
       stopResultFlash();
       clearClaimResetTimeout();
       detachClaimResetListeners();
-      currentOfferLink = '';
+      resultLink = '';
       slotBtn.disabled = true;
       slotBtn.classList.add('is-busy');
       validateAndLogState(currentButtonState, { disabled: true });
