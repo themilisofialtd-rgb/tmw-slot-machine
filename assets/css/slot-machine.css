@@ -121,7 +121,7 @@
   box-shadow: 0 0 14px rgba(255, 0, 0, 0.6);
 }
 
-/* Hide any unexpected duplicate buttons */
+/* Runtime safety: hide any unexpected duplicate buttons immediately */
 .slot-container button:not(:first-of-type) {
   display: none !important;
 }
