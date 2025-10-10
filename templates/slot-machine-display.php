@@ -15,10 +15,7 @@ if (!is_string($trigger_headline) || $trigger_headline === '') {
   <div class="slot-headline"><?php echo esc_html($trigger_headline); ?></div>
   <div class="slot-body slot-container">
     <div class="slot-left">
-      <button id="tmw-slot-btn" class="tmw-spin-btn slot-spin slot-btn" type="button">
-        <span class="slot-label">SPIN NOW</span>
-        <span class="slot-icon">🎰</span>
-      </button>
+      <button id="tmw-slot-btn" class="slot-btn spin" type="button">Spin Now</button>
     </div>
 
     <div class="slot-center">
