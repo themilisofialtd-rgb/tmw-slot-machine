@@ -323,3 +323,53 @@
     50% { color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,1); transform: scale(1.05); }
   }
 }
+
+/* === MOBILE FIX: True Oval Button === */
+@media (max-width: 700px) {
+  .slot-spin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tmw-accent-color, #ff3366);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 8px 34px !important;  /* long oval */
+    min-width: auto !important;
+    height: auto !important;
+    border-radius: 50px !important; /* force oval shape */
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.9);
+    transform: none !important;
+    line-height: 1;
+  }
+
+  .slot-icon {
+    font-size: 16px;
+    margin-left: 6px;
+    position: static;
+    transform: none;
+  }
+
+  /* prevent any flex or container height override */
+  .slot-left {
+    height: auto !important;
+    display: flex;
+    justify-content: center;
+    background: transparent !important;
+  }
+
+  /* tighten layout */
+  .slot-body {
+    gap: 5px !important;
+    padding: 8px 0 !important;
+  }
+
+  .slot-reels {
+    gap: 8px;
+  }
+
+  .tmw-slot-machine {
+    padding: 10px;
+    box-shadow: 0 0 18px rgba(255, 0, 60, 0.9);
+  }
+}
