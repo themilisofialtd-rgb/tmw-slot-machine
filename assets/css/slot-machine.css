@@ -136,32 +136,29 @@
 
 .tmw-win-message {
   font-size: 1.2rem;
-  color: #ff007a;
+  color: #ff0033;
   text-align: center;
   margin-top: 10px;
-  animation: pulseText 1.5s infinite;
+  font-weight: 600;
+}
+
+.tmw-prize-text {
+  color: #ff0033;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 0, 51, 0.4);
 }
 
 .tmw-claim-bonus {
   display: inline-block;
   margin-left: 8px;
-  background: linear-gradient(90deg, #ff007a, #ff9c00);
+  background: linear-gradient(90deg, #ff0033, #ff6600);
   color: #fff;
   padding: 6px 16px;
   border-radius: 50px;
   text-decoration: none;
   font-weight: 600;
   animation: heartbeat 1.2s infinite;
-  box-shadow: 0 0 10px rgba(255, 0, 122, 0.6);
-}
-
-@keyframes pulseText {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  box-shadow: 0 0 10px rgba(255, 0, 51, 0.6);
 }
 
 @keyframes heartbeat {
