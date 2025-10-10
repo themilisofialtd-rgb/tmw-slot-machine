@@ -50,27 +50,44 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   background: var(--tmw-accent-color, #ff3366);
   border: none;
   color: #fff;
   font-weight: 700;
   font-size: 16px;
   white-space: nowrap;
-  padding: 10px 50px 10px 30px;
+  padding: 10px 32px;
   border-radius: 9999px;
   cursor: pointer;
   box-shadow: 0 0 12px rgba(255, 51, 102, 0.6);
   transition: all 0.2s ease-in-out;
 }
 
+.slot-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
+.slot-btn .slot-label {
+  line-height: 1;
+}
+
+.slot-btn.is-busy {
+  cursor: wait;
+  opacity: 0.85;
+}
+
 .slot-icon {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
   font-size: 18px;
   line-height: 1;
   pointer-events: none;
+  margin-left: 6px;
 }
 
 .slot-spin:hover {
@@ -84,9 +101,14 @@
 
 .slot-btn.claim,
 .slot-btn.spin-again {
-  display: inline-block;
+  display: inline-flex;
   position: relative;
-  z-index: 2;
+  z-index: 1;
+}
+
+.slot-btn.claim.active + .slot-btn.spin-again,
+.slot-btn.spin-again.active + .slot-btn.claim {
+  display: none;
 }
 
 .slot-btn.claim {

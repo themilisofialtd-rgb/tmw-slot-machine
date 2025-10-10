@@ -112,6 +112,16 @@ function tmw_slot_machine_admin_page() {
     include TMW_SLOT_MACHINE_PATH . 'admin/settings-page.php';
 }
 
+add_action('wp_ajax_nopriv_tmw_slot_log', 'tmw_slot_log_callback');
+add_action('wp_ajax_tmw_slot_log', 'tmw_slot_log_callback');
+
+function tmw_slot_log_callback() {
+    $raw_state = isset($_POST['state']) ? $_POST['state'] : 'unknown';
+    $state     = sanitize_text_field(wp_unslash($raw_state));
+    error_log('[SlotMachine] UI State: ' . $state);
+    wp_die();
+}
+
 // Activation hook
 register_activation_hook(__FILE__, function() {
     $default_settings = [
