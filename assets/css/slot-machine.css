@@ -5,16 +5,15 @@
   margin: 0 auto 10px auto;
   background: #111;
   border-radius: 8px;
-  padding: 10px 15px;
+  padding: 14px 18px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
   color: #fff;
-  text-align: center;
   font-family: 'Arial', sans-serif;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 6px;
 }
 
 .slot-headline {
@@ -22,7 +21,6 @@
   font-size: 20px;
   font-weight: 700;
   color: var(--tmw-accent-color, #ff3366);
-  margin-bottom: 10px;
   letter-spacing: 0.5px;
   text-shadow: 0 0 8px rgba(255, 51, 102, 0.5);
   animation: fadeInHeadline 1s ease-in;
@@ -39,59 +37,91 @@
   }
 }
 
+/* 3-column compact slot layout */
+.slot-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  width: 100%;
+  max-width: 970px;
+  margin: 0 auto;
+  padding: 8px 0;
+}
+
+.slot-left,
+.slot-center,
+.slot-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot-left {
+  flex: 0 0 150px;
+}
+
+.slot-center {
+  flex: 0 0 auto;
+}
+
+.slot-right {
+  flex: 0 0 220px;
+  text-align: left;
+}
+
+/* Reels */
+.slot-reels,
 .tmw-reels {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 140px;
-  overflow: hidden;
   gap: 12px;
-  width: 100%;
 }
 
 .reel {
-  width: 80px;
+  width: 90px;
   height: 120px;
-  margin: 0;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
-  transition: background-image 0.2s ease-in-out;
 }
 
+/* Spin button */
+.slot-spin,
 .tmw-spin-btn {
-  margin-top: 8px;
   background: var(--tmw-accent-color, #ff3366);
-  color: #fff;
   border: none;
-  padding: 10px 22px;
-  font-weight: 700;
-  border-radius: 999px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 12px 28px;
+  border-radius: 50px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow: 0 8px 18px rgba(255, 51, 102, 0.3);
+  box-shadow: 0 0 8px rgba(255, 51, 102, 0.6);
+  transition: all 0.2s ease-in-out;
 }
 
-.tmw-spin-btn:hover:not([disabled]) {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+.slot-spin:hover,
+.tmw-spin-btn:hover {
+  transform: scale(1.05);
 }
 
 .tmw-spin-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* Offer message */
 .slot-result,
 .tmw-result {
-  margin-top: 6px;
-  text-align: center;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--tmw-accent-color, #ff3366);
+  text-align: left;
+  max-width: 180px;
   min-height: 28px;
   transition: opacity 0.3s ease-in, transform 0.3s ease-in;
   opacity: 0;
@@ -114,17 +144,37 @@
   text-decoration: underline;
 }
 
+/* Sound toggle under reels */
+.slot-sound-toggle,
 .tmw-sound-toggle {
-  margin-top: 6px;
-  cursor: pointer;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.75);
+  color: #ccc;
+  margin-top: 8px;
+  cursor: pointer;
 }
 
 @keyframes pulseGlow {
   0% { text-shadow: 0 0 4px rgba(255, 51, 102, 0.6); }
   50% { text-shadow: 0 0 10px rgba(255, 51, 102, 1); }
   100% { text-shadow: 0 0 4px rgba(255, 51, 102, 0.6); }
+}
+
+/* Responsive layout */
+@media (max-width: 700px) {
+  .slot-body {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .slot-right {
+    align-items: center;
+  }
+
+  .slot-result,
+  .tmw-result {
+    text-align: center;
+    margin-top: 5px;
+  }
 }
 
 /* Responsive scaling */
@@ -135,16 +185,14 @@
 
   .slot-headline {
     font-size: 16px;
-    margin-bottom: 8px;
   }
 
   .reel {
-    width: 60px;
-    height: 90px;
+    width: 70px;
+    height: 95px;
   }
 
-  .slot-result,
-  .tmw-result {
-    font-size: 14px;
+  .slot-left {
+    flex-basis: auto;
   }
 }
