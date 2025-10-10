@@ -134,16 +134,6 @@
   opacity: 1;
 }
 
-.slot-offer-link {
-  color: var(--tmw-accent-color, #ff3366);
-  text-decoration: none;
-  animation: pulseGlow 2s infinite;
-}
-
-.slot-offer-link:hover {
-  text-decoration: underline;
-}
-
 .slot-sound-toggle {
   font-size: 14px;
   color: #bbb;
@@ -156,16 +146,41 @@
   opacity: 1;
 }
 
-@keyframes pulseGlow {
+/* === Offer link heartbeat animation === */
+@keyframes offerHeartbeat {
   0% {
-    text-shadow: 0 0 4px rgba(255, 51, 102, 0.6);
+    color: #ffffff;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+    transform: scale(1);
   }
-  50% {
-    text-shadow: 0 0 10px rgba(255, 51, 102, 1);
+  40% {
+    color: #ff3366;
+    text-shadow: 0 0 8px rgba(255, 51, 102, 0.8);
+    transform: scale(1.03);
+  }
+  60% {
+    color: #ffffff;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+    transform: scale(1);
   }
   100% {
-    text-shadow: 0 0 4px rgba(255, 51, 102, 0.6);
+    color: #ff3366;
+    text-shadow: 0 0 8px rgba(255, 51, 102, 0.8);
+    transform: scale(1.03);
   }
+}
+
+/* Apply animation only to clickable offer links */
+.slot-offer-link {
+  color: var(--tmw-accent-color, #ff3366);
+  text-decoration: none;
+  font-weight: 700;
+  animation: offerHeartbeat 1.4s infinite ease-in-out;
+}
+
+.slot-offer-link:hover {
+  text-decoration: underline;
+  animation: none; /* stops flashing while hovered */
 }
 
 /* === MOBILE === */
