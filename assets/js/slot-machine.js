@@ -15,8 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
+    result.classList.add('slot-result');
+
     let soundEnabled = (container.dataset.soundDefault || 'off') === 'on';
-    let offers = [];
     let audioContext;
     const winSoundPath = assetsBaseUrl ? `${assetsBaseUrl}/sounds/win.mp3` : 'assets/sounds/win.mp3';
     const winSound = new Audio(winSoundPath);
@@ -58,20 +59,77 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     };
 
-    if (container.dataset.offers) {
-      try {
-        const parsed = JSON.parse(container.dataset.offers);
-        if (Array.isArray(parsed)) {
-          offers = parsed.filter(offer => offer && offer.title && offer.url);
-        }
-      } catch (error) {
-        console.error('TMW Slot Machine: invalid offers data', error);
+    const offersData = (() => {
+      if (typeof tmwSlot !== 'undefined' && tmwSlot && Array.isArray(tmwSlot.offers)) {
+        return tmwSlot.offers;
       }
-    }
 
-    const defaultOffer = {
-      title: 'Claim Reward',
-      url: 'https://www.livejasmin.com/en/promotions?category=girls&psid=Topmodels4u'
+      if (container.dataset.offers) {
+        try {
+          const parsed = JSON.parse(container.dataset.offers);
+          if (Array.isArray(parsed)) {
+            return parsed.filter(offer => offer && offer.title && offer.url);
+          }
+        } catch (error) {
+          console.error('TMW Slot Machine: invalid offers data', error);
+        }
+      }
+
+      return [];
+    })();
+
+    const offerMap = [
+      'bonus.png',
+      'peeks.png',
+      'deal.png',
+      'roses.png',
+      'value.png'
+    ];
+
+    const showOfferMessage = iconName => {
+      if (!result) {
+        return;
+      }
+
+      result.classList.remove('show');
+
+      const offerIndex = offerMap.indexOf(iconName);
+      if (offerIndex === -1 || !offersData[offerIndex]) {
+        result.textContent = 'You Win!';
+        result.classList.add('show');
+        return;
+      }
+
+      const { title, url } = offersData[offerIndex];
+      if (!title || !url) {
+        result.textContent = 'You Win!';
+        result.classList.add('show');
+        return;
+      }
+
+      const escapeHtml = value => String(value).replace(/[&<>"']/g, match => {
+        switch (match) {
+          case '&':
+            return '&amp;';
+          case '<':
+            return '&lt;';
+          case '>':
+            return '&gt;';
+          case '"':
+            return '&quot;';
+          case "'":
+            return '&#39;';
+          default:
+            return match;
+        }
+      });
+
+      const escapedTitle = escapeHtml(title);
+      const escapedUrl = escapeHtml(url);
+      result.innerHTML = `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" class="slot-offer-link">${escapedTitle}</a>`;
+      // Trigger reflow for repeated animations
+      void result.offsetWidth;
+      result.classList.add('show');
     };
 
     const ensureAudioContext = () => {
@@ -181,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
       stopResultFlash();
       btn.disabled = true;
       result.textContent = '';
+      result.classList.remove('show');
       stopWinSound();
       setRandomIconsOnReels(reelList);
       reels.forEach(reel => reel.classList.add('spin'));
@@ -192,14 +251,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
       reels.forEach(reel => reel.classList.remove('spin'));
       startResultFlash(iconPool, () => {
-        applySpinResult(reelList, iconPool, isWinningSpin);
-        const offer = offers.length ? offers[Math.floor(Math.random() * offers.length)] : defaultOffer;
+        const spinResult = applySpinResult(reelList, iconPool, isWinningSpin);
 
-        if (isWinningSpin) {
-          result.innerHTML = `🎉 You WON! <a href="${offer.url}" target="_blank" rel="noopener noreferrer">${offer.title}</a>`;
+        if (isWinningSpin && Array.isArray(spinResult) && spinResult.length) {
+          const matchedIcon = spinResult[0];
+          showOfferMessage(matchedIcon);
           playWinSound();
         } else {
-          result.innerHTML = `😅 So close! Try again or <a href="${offer.url}" target="_blank" rel="noopener noreferrer">grab ${offer.title}</a>.`;
+          result.textContent = 'Try Again!';
+          result.classList.remove('show');
           playTone(260, 0.2);
         }
 

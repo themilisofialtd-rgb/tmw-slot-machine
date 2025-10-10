@@ -55,10 +55,19 @@ function tmw_slot_machine_enqueue_assets() {
     $win_probability  = max(0, min(100, $win_probability));
 
     // Provide JS access to the plugin URL for image and asset paths
+    $offers = get_option('tmw_slot_machine_offers', []);
+    if (empty($offers)) {
+        $settings = get_option('tmw_slot_machine_settings', []);
+        if (!empty($settings['offers'])) {
+            $offers = $settings['offers'];
+        }
+    }
+
     wp_localize_script('tmw-slot-js', 'tmwSlot', [
         'url'       => plugins_url('', __FILE__),
         'assetsUrl' => plugins_url('assets', __FILE__),
         'winRate'   => $win_probability,
+        'offers'    => is_array($offers) ? array_values($offers) : [],
     ]);
 }
 

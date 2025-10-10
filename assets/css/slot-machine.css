@@ -103,3 +103,43 @@
   transition: none !important;
   transform: none !important;
 }
+
+.slot-result {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.slot-result.show {
+  opacity: 1;
+  transform: translateY(0);
+  animation: slotResultFade 0.4s ease;
+}
+
+@keyframes slotResultFade {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slot-offer-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #ff3366;
+  font-weight: 700;
+  text-decoration: none;
+  animation: pulseGlow 2s infinite;
+}
+
+.slot-offer-link:hover {
+  text-decoration: underline;
+}
+
+@keyframes pulseGlow {
+  0% { text-shadow: 0 0 5px rgba(255, 51, 102, 0.6); }
+  50% { text-shadow: 0 0 12px rgba(255, 51, 102, 1); }
+  100% { text-shadow: 0 0 5px rgba(255, 51, 102, 0.6); }
+}
