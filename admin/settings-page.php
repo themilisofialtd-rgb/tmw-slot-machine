@@ -11,6 +11,8 @@ $defaults = [
 ];
 
 $settings = wp_parse_args(get_option('tmw_slot_machine_settings', []), $defaults);
+$headline_default = defined('TMW_SLOT_MACHINE_DEFAULT_HEADLINE') ? TMW_SLOT_MACHINE_DEFAULT_HEADLINE : 'Spin Now & Reveal Your Secret Bonus 👀';
+$trigger_headline = get_option('tmw_slot_trigger_headline', $headline_default);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('tmw_slot_machine_save_settings')) {
     $settings['win_rate'] = max(1, min(100, intval($_POST['win_rate'] ?? $settings['win_rate'])));
@@ -18,6 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('tmw_slot_machi
 
     $accent_color = sanitize_hex_color($_POST['accent_color'] ?? $settings['accent_color']);
     $settings['accent_color'] = $accent_color ?: $defaults['accent_color'];
+
+    $headline_input = sanitize_text_field($_POST['tmw_slot_trigger_headline'] ?? $trigger_headline);
+    if ($headline_input === '') {
+        $headline_input = $headline_default;
+    }
+    update_option('tmw_slot_trigger_headline', $headline_input);
+
+    $trigger_headline = $headline_input;
 
     $titles = isset($_POST['offers_title']) ? (array) $_POST['offers_title'] : [];
     $urls   = isset($_POST['offers_url']) ? (array) $_POST['offers_url'] : [];
@@ -68,6 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('tmw_slot_machi
                 <td>
                     <input id="tmw-accent-color" type="color" name="accent_color" value="<?php echo esc_attr($settings['accent_color']); ?>">
                     <p class="description">Controls the button and highlight color of the slot machine.</p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="tmw-trigger-headline">Trigger Headline</label></th>
+                <td>
+                    <input id="tmw-trigger-headline" type="text" name="tmw_slot_trigger_headline" value="<?php echo esc_attr($trigger_headline); ?>" style="width:100%;max-width:600px;">
+                    <p class="description">This text appears above the slot reels (e.g. “Spin Now &amp; Reveal Your Secret Bonus 👀”).</p>
                 </td>
             </tr>
         </table>

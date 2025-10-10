@@ -14,6 +14,10 @@ if (!defined('ABSPATH')) {
 define('TMW_SLOT_MACHINE_PATH', plugin_dir_path(__FILE__));
 define('TMW_SLOT_MACHINE_URL', plugin_dir_url(__FILE__));
 
+if (!defined('TMW_SLOT_MACHINE_DEFAULT_HEADLINE')) {
+    define('TMW_SLOT_MACHINE_DEFAULT_HEADLINE', 'Spin Now & Reveal Your Secret Bonus 👀');
+}
+
 // Verify that all neon icon files exist
 add_action('init', function() {
     $icons = ['bonus.png', 'peeks.png', 'deal.png', 'roses.png', 'value.png'];
@@ -63,11 +67,17 @@ function tmw_slot_machine_enqueue_assets() {
         }
     }
 
+    $headline = get_option('tmw_slot_trigger_headline', TMW_SLOT_MACHINE_DEFAULT_HEADLINE);
+    if (!is_string($headline) || $headline === '') {
+        $headline = TMW_SLOT_MACHINE_DEFAULT_HEADLINE;
+    }
+
     wp_localize_script('tmw-slot-js', 'tmwSlot', [
         'url'       => plugins_url('', __FILE__),
         'assetsUrl' => plugins_url('assets', __FILE__),
         'winRate'   => $win_probability,
         'offers'    => is_array($offers) ? array_values($offers) : [],
+        'headline'  => wp_strip_all_tags($headline),
     ]);
 }
 
@@ -84,6 +94,18 @@ function tmw_slot_machine_display() {
 // Admin menu
 add_action('admin_menu', function() {
     add_options_page('TMW Slot Machine', 'TMW Slot Machine', 'manage_options', 'tmw-slot-machine', 'tmw_slot_machine_admin_page');
+});
+
+add_action('admin_init', function() {
+    register_setting(
+        'tmw_slot_machine_group',
+        'tmw_slot_trigger_headline',
+        [
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => TMW_SLOT_MACHINE_DEFAULT_HEADLINE,
+        ]
+    );
 });
 
 function tmw_slot_machine_admin_page() {
@@ -111,5 +133,9 @@ register_activation_hook(__FILE__, function() {
         update_option('tmw_slot_machine_settings', $default_settings);
     } else {
         update_option('tmw_slot_machine_settings', wp_parse_args($existing, $default_settings));
+    }
+
+    if (get_option('tmw_slot_trigger_headline', false) === false) {
+        update_option('tmw_slot_trigger_headline', TMW_SLOT_MACHINE_DEFAULT_HEADLINE);
     }
 });
