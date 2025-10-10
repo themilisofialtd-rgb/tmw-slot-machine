@@ -17,12 +17,26 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.tmw-branding {
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+.slot-headline {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--tmw-accent-color, #ff3366);
-  margin-bottom: 6px;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(255, 51, 102, 0.5);
+  animation: fadeInHeadline 1s ease-in;
+}
+
+@keyframes fadeInHeadline {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tmw-reels {
@@ -119,8 +133,9 @@
     padding: 12px;
   }
 
-  .tmw-branding {
-    font-size: 10px;
+  .slot-headline {
+    font-size: 16px;
+    margin-bottom: 8px;
   }
 
   .reel {
