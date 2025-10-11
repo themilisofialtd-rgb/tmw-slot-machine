@@ -725,3 +725,17 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
     margin: 0 auto;
   }
 }
+
+/* === v1.4.8h — Fix truncated win text === */
+@media (min-width: 992px) {
+  .tmw-slot-machine .slot-result.win-text,
+  .tmw-slot-machine .tmw-win-message {
+    max-width: 100% !important;     /* allow full text width */
+    white-space: nowrap !important; /* stay one line */
+    overflow: visible !important;   /* no clipping */
+    text-overflow: unset !important;
+    font-size: 0.9rem !important;
+    transform: scale(0.98);         /* gentle shrink for long text */
+  }
+}
+
