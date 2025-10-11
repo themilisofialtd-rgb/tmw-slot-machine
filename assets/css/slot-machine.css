@@ -707,3 +707,21 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
     column-gap: 10px !important;
   }
 }
+/* === v1.4.8f — Reduce Winning Text Font Size for Single-Line Display === */
+@media (min-width: 992px) {
+  .tmw-slot-machine .slot-result.win-text,
+  .tmw-slot-machine .tmw-win-message {
+    font-size: 0.9rem !important;     /* smaller font for long text */
+    white-space: nowrap !important;   /* force single line */
+    line-height: 1.2 !important;
+    text-align: center;
+  }
+
+  /* Optional: if text ever overflows, let it shrink slightly */
+  .tmw-slot-machine .slot-result.win-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+}
