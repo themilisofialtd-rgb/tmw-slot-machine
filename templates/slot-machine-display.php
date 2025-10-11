@@ -30,6 +30,7 @@ if (!is_string($trigger_headline) || $trigger_headline === '') {
     </div>
 
     <div class="slot-right">
+      <div class="tmw-slot-placeholder"></div>
       <div class="tmw-result slot-result"></div>
     </div>
   </div>
