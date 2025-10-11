@@ -1,10 +1,9 @@
 <?php
 /*
 Plugin Name: TMW Slot Machine
-Description: Gamified LiveJasmin promotions with variable dopamine-based spin logic to boost engagement and conversions.
-Version: 1.1.3c
-Author: Adultwebmaster69 | Top-Models Webcam Studio
-Author URI: https://top-models.webcam
+Description: Interactive slot bonus banner for Top-Models.Webcam
+Version: 1.4.8
+Author: The Milisofia Ltd
 */
 
 if (!defined('ABSPATH')) {
@@ -40,17 +39,17 @@ function tmw_slot_machine_asset_version($relative_path) {
 
 function tmw_slot_machine_enqueue_assets() {
     wp_enqueue_style(
-        'tmw-slot-css',
-        TMW_SLOT_MACHINE_URL . 'assets/css/slot-machine.css',
+        'tmw-slot-machine',
+        plugins_url('assets/css/slot-machine.css', __FILE__),
         [],
-        tmw_slot_machine_asset_version('assets/css/slot-machine.css')
+        '1.4.8'
     );
 
     wp_enqueue_script(
-        'tmw-slot-js',
-        TMW_SLOT_MACHINE_URL . 'assets/js/slot-machine.js',
-        [],
-        tmw_slot_machine_asset_version('assets/js/slot-machine.js'),
+        'tmw-slot-machine',
+        plugins_url('assets/js/slot-machine.js', __FILE__),
+        ['jquery'],
+        '1.4.8',
         true
     );
 
@@ -72,7 +71,7 @@ function tmw_slot_machine_enqueue_assets() {
         $headline = TMW_SLOT_MACHINE_DEFAULT_HEADLINE;
     }
 
-    wp_localize_script('tmw-slot-js', 'tmwSlot', [
+    wp_localize_script('tmw-slot-machine', 'tmwSlot', [
         'url'       => plugins_url('', __FILE__),
         'assetsUrl' => plugins_url('assets', __FILE__),
         'winRate'   => $win_probability,

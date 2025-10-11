@@ -1,3 +1,8 @@
+if (typeof tmwSlot === 'undefined' || !tmwSlot.assetsUrl) {
+  console.warn('tmwSlot.assetsUrl missing – using fallback path.');
+  var tmwSlot = { assetsUrl: '/wp-content/plugins/tmw-slot-machine/assets' };
+}
+
 const SLOT_BUTTON_ID = 'tmw-slot-btn';
 const SLOT_BUTTON_CLASS = 'slot-btn';
 const slotContainer = document.querySelector('.slot-container');
