@@ -140,11 +140,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let surpriseImgEl = null;
     const hideSurpriseImage = () => {
       if (surpriseImgEl) {
-        surpriseImgEl.style.display = 'none';
-        if (typeof surpriseImgEl.remove === 'function') {
-          surpriseImgEl.remove();
-        }
+        surpriseImgEl.remove();
         surpriseImgEl = null;
+      }
+      const placeholder = document.querySelector('.tmw-slot-placeholder');
+      if (placeholder && !placeholder.querySelector('.tmw-surprise-img')) {
+        placeholder.style.display = 'none';
       }
     };
 
