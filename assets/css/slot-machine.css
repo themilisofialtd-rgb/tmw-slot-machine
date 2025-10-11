@@ -694,3 +694,16 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   min-height: 0 !important;
   display: none !important;
 }
+
+/* === v1.4.8e — Align Right Column Center (Surprise Image Position Audit) === */
+@media (min-width: 992px) {
+  /* Center the entire right column horizontally within the grid */
+  .tmw-slot-machine .slot-right {
+    justify-self: center !important; /* move inward from the edge */
+  }
+
+  /* Reduce horizontal gap for better balance with center reels */
+  .tmw-slot-machine .slot-body {
+    column-gap: 10px !important;
+  }
+}
