@@ -214,6 +214,10 @@ document.addEventListener('DOMContentLoaded', function() {
       claimLink.textContent = labelText || defaultLabel;
 
       right.appendChild(claimLink);
+
+      if (right && claimLink) {
+        right.insertBefore(claimLink, right.firstChild);
+      }
       cleanGhostBonus(container);
     };
 
