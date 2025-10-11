@@ -3,12 +3,20 @@ const SLOT_BUTTON_CLASS = 'slot-btn';
 const slotContainer = document.querySelector('.slot-container');
 const slotBtn = document.getElementById(SLOT_BUTTON_ID);
 
+const cleanGhostBonus = () => {
+  document
+    .querySelectorAll('.slot-left .tmw-claim-bonus')
+    .forEach(node => node.remove());
+};
+
 const cleanupSlotButtons = () => {
   document
     .querySelectorAll('.slot-container .slot-btn:not(#tmw-slot-btn)')
     .forEach(button => button.remove());
+  cleanGhostBonus();
 };
 
+cleanGhostBonus();
 cleanupSlotButtons();
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -485,6 +493,18 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       animateWinReveal();
+
+      // --- Placement Lock: force bonus link to right side ---
+      const bonusLink = document.querySelector('.tmw-claim-bonus');
+      const rightContainer = document.querySelector('.slot-right');
+      const leftContainer = document.querySelector('.slot-left');
+
+      if (bonusLink && rightContainer) {
+        rightContainer.appendChild(bonusLink);
+      }
+      if (bonusLink && leftContainer && leftContainer.contains(bonusLink)) {
+        bonusLink.remove();
+      }
     };
 
     const ensureAudioContext = () => {
