@@ -1,5 +1,7 @@
 /* === SLOT CONTAINER === */
 .tmw-slot-machine {
+  /* Force neutral accent color inside plugin scope */
+  --tmw-accent-color: #ffffff;
   width: 100%;
   max-width: 970px;
   margin: 0 auto 10px auto;
