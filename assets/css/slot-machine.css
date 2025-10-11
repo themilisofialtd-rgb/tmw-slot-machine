@@ -532,3 +532,11 @@
   color: #fff !important;
 }
 
+/* Fix for header still showing red (v1.1.3d) */
+body .tmw-slot-machine .slot-title,
+body .tmw-slot-machine .slot-title *,
+body .tmw-slot-machine h2.slot-title,
+body .tmw-slot-machine h2,
+body .tmw-slot-machine .slot-header {
+  color: #fff !important;
+}
