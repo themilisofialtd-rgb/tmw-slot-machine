@@ -175,6 +175,31 @@
   opacity: 1;
 }
 
+.tmw-surprise-img {
+  width: 120px;
+  height: 120px;
+  margin: 10px auto;
+  display: block;
+  animation: popIn 0.6s ease;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 991px) {
+  .tmw-surprise-img {
+    display: none !important;
+  }
+}
+
 .tmw-win-message {
   font-size: 1.2rem;
   color: inherit; /* color:#ff0033 removed — text now inherits */

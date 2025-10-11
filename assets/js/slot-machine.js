@@ -132,6 +132,41 @@ document.addEventListener('DOMContentLoaded', function() {
     cleanGhostBonus(container);
     cleanupSlotButtons(container);
 
+    let surpriseImgEl = null;
+    const hideSurpriseImage = () => {
+      if (surpriseImgEl) {
+        surpriseImgEl.style.display = 'none';
+        if (typeof surpriseImgEl.remove === 'function') {
+          surpriseImgEl.remove();
+        }
+        surpriseImgEl = null;
+      }
+    };
+
+    const shouldShowSurprise = typeof window !== 'undefined' && window.innerWidth >= 992;
+    if (shouldShowSurprise) {
+      const surpriseTarget = container.querySelector('.tmw-slot-placeholder') || result;
+      if (surpriseTarget && !surpriseTarget.querySelector('.tmw-surprise-img')) {
+        const surpriseImg = document.createElement('img');
+        const assetsBase = (typeof tmwSlot !== 'undefined' && tmwSlot && tmwSlot.assetsUrl)
+          ? String(tmwSlot.assetsUrl).trim().replace(/\/$/, '')
+          : assetsBaseUrl;
+        const fallbackSrc = 'assets/img/surprice-trans.png';
+
+        surpriseImg.src = assetsBase ? `${assetsBase}/img/surprice-trans.png` : fallbackSrc;
+        surpriseImg.alt = 'Surprise Bonus';
+        surpriseImg.className = 'tmw-surprise-img';
+        surpriseImgEl = surpriseImg;
+        surpriseTarget.appendChild(surpriseImg);
+      }
+    }
+
+    if (slotBtn && typeof slotBtn.addEventListener === 'function') {
+      slotBtn.addEventListener('click', () => {
+        hideSurpriseImage();
+      }, { once: true });
+    }
+
     const ghostObserver = new MutationObserver(() => {
       cleanGhostBonus(container);
     });
@@ -700,6 +735,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
+      hideSurpriseImage();
       stopResultFlash();
       renderRightClaim('');
       slotBtn.disabled = true;
