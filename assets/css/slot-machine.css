@@ -586,3 +586,19 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   align-items: center;
   justify-content: center;
 }
+
+/* === Slightly Smaller Button Size (v1.1.3l) === */
+.tmw-slot-machine .slot-btn,
+.tmw-slot-machine .slot-right .tmw-claim-bonus {
+  transform: scale(0.85); /* reduce overall size */
+  min-width: 170px !important; /* slightly smaller base */
+  min-height: 48px !important;
+  padding: 8px 26px !important;
+  font-size: 0.9rem !important;
+}
+
+.tmw-slot-machine .slot-btn:hover,
+.tmw-slot-machine .slot-right .tmw-claim-bonus:hover {
+  transform: scale(0.9); /* smooth hover scaling */
+}
+
