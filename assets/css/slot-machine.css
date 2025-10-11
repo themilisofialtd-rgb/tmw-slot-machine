@@ -665,3 +665,32 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 .tmw-slot-machine .slot-right .tmw-claim-bonus:hover {
   transform: scale(1.05);
 }
+/* === v1.4.8d Center Surprise Image + Remove Empty Gap === */
+@media (min-width: 992px) {
+  /* Center the surprise image vertically + horizontally */
+  .slot-right {
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .tmw-slot-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+  }
+
+  .tmw-slot-placeholder .tmw-surprise-img {
+    position: relative;
+    margin: 0 auto;
+    top: 0;
+    left: 0;
+    transform: none;
+  }
+}
+
+/* Collapse placeholder when image removed */
+.tmw-slot-placeholder:empty {
+  min-height: 0 !important;
+  display: none !important;
+}
