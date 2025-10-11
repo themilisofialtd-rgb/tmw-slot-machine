@@ -182,39 +182,6 @@
   text-shadow: 0 0 8px rgba(255, 0, 51, 0.4);
 }
 
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  25% {
-    transform: scale(1.1);
-  }
-  50% {
-    transform: scale(0.9);
-  }
-  75% {
-    transform: scale(1.05);
-  }
-}
-
-/* Sound button style */
-.sound-toggle {
-  font-size: 14px;
-  color: #aaa;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.sound-toggle.active {
-  color: #fff;
-}
-
-.sound-toggle:hover {
-  color: #fff;
-}
-
 /* === Offer text heartbeat animation === */
 @keyframes heartbeatWin {
   0%, 100% {
@@ -475,4 +442,52 @@
 .slot-left .tmw-claim-bonus {
   display: none !important;
   visibility: hidden !important;
+}
+
+/* --- Header text: white --- */
+.slot-heading {
+  color: #fff !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* --- Sound toggle: stable grey style --- */
+.sound-toggle {
+  background-color: #555 !important;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.95;
+}
+
+.sound-toggle:hover {
+  background-color: #666 !important;
+}
+
+.sound-toggle.active,
+.sound-toggle:focus {
+  background-color: #555 !important;
+  color: #fff !important;
+  outline: none;
+}
+
+/* --- Claim button heartbeat --- */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+.slot-right .tmw-claim-bonus {
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+/* --- Win message smaller font --- */
+.slot-result.win-text.revealed {
+  font-size: 0.9rem;
 }

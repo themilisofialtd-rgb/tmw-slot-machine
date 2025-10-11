@@ -549,22 +549,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateSoundLabel();
 
-    const enableSoundOnLoad = () => {
+    // --- Sound: default muted (grey "Enable Sound") ---
+    const initializeMutedSound = () => {
       const audioToggle = document.getElementById('soundToggle') || soundToggle;
-      if (audioToggle && !audioToggle.classList.contains('active')) {
-        audioToggle.classList.add('active');
-        soundEnabled = true;
-        persistSoundPreference('on');
-        updateSoundLabel();
+      if (audioToggle) {
+        soundEnabled = false;
+        audioToggle.classList.remove('active');
+        audioToggle.textContent = '🔇 Enable Sound';
+        audioToggle.style.backgroundColor = '#555';
       }
     };
 
-    // Auto-enable sound on page load
-    if (document.readyState === 'loading') {
-      window.addEventListener('DOMContentLoaded', enableSoundOnLoad);
-    } else {
-      enableSoundOnLoad();
-    }
+    window.addEventListener('DOMContentLoaded', initializeMutedSound);
+    initializeMutedSound();
 
     soundToggle.addEventListener('click', () => {
       soundEnabled = !soundEnabled;
