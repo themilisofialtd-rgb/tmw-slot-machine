@@ -602,3 +602,23 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   transform: scale(0.9); /* smooth hover scaling */
 }
 
+/* === Perfectly Balanced Buttons (v1.1.3n) === */
+.tmw-slot-machine .slot-btn,
+.tmw-slot-machine .slot-right .tmw-claim-bonus {
+  min-width: 200px !important;
+  min-height: 52px !important;
+  padding: 10px 28px !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional hover consistency */
+.tmw-slot-machine .slot-btn:hover,
+.tmw-slot-machine .slot-right .tmw-claim-bonus:hover {
+  transform: scale(1.05);
+}
