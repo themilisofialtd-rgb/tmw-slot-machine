@@ -519,3 +519,16 @@
   order: 1;  /* show second */
 }
 
+/* ===== WHITE TEXT OVERRIDE (v1.1.3b) ===== */
+.tmw-slot-machine,
+.tmw-slot-machine .slot-result,
+.tmw-slot-machine .slot-result.win-text,
+.tmw-slot-machine .slot-result h2,
+.tmw-slot-machine .slot-result p,
+.tmw-slot-machine .slot-title,
+.tmw-slot-machine .slot-title span,
+.tmw-slot-machine .slot-result .win-text,
+.tmw-slot-machine .slot-result .win-text span {
+  color: #fff !important;
+}
+
