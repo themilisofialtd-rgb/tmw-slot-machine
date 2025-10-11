@@ -16,6 +16,9 @@ if (!is_string($trigger_headline) || $trigger_headline === '') {
   <div class="slot-body slot-container">
     <div class="slot-left">
       <button id="tmw-slot-btn" class="slot-btn spin" type="button">Spin Now</button>
+      <div class="slot-sound">
+        <button id="soundToggle" class="sound-toggle" aria-label="Sound On">🔊 Sound On</button>
+      </div>
     </div>
 
     <div class="slot-center">
@@ -28,7 +31,6 @@ if (!is_string($trigger_headline) || $trigger_headline === '') {
 
     <div class="slot-right">
       <div class="tmw-result slot-result"></div>
-      <div class="tmw-sound-toggle slot-sound-toggle">🔊 Sound On</div>
     </div>
   </div>
 </div>
