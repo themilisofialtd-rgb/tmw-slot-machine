@@ -178,8 +178,8 @@
 .tmw-surprise-img {
   width: 120px;
   height: 120px;
-  margin: 10px auto;
   display: block;
+  margin: 0 auto;
   animation: popIn 0.6s ease;
 }
 
