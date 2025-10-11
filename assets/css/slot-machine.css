@@ -551,3 +551,30 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   color: #ffffff !important;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
 }
+/* === Horizontal Button Alignment Fix (v1.1.3h) === */
+.tmw-slot-machine .slot-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+/* Make both button sections align neatly */
+.tmw-slot-machine .slot-left,
+.tmw-slot-machine .slot-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+/* Center reels between both buttons */
+.tmw-slot-machine .slot-center {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
