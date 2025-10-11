@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const reels = container.querySelectorAll('.reel');
     const result = container.querySelector('.tmw-result');
     const reelsContainer = container.querySelector('.slot-reels, .tmw-reels');
-    const soundToggle = container.querySelector('.tmw-sound-toggle');
+    const soundToggle = container.querySelector('#soundToggle, .sound-toggle, .tmw-sound-toggle');
 
     if (!slotBtn || !reels.length || !result || !soundToggle) {
       return;
@@ -531,11 +531,40 @@ document.addEventListener('DOMContentLoaded', function() {
       oscillator.stop(now + duration);
     };
 
+    const persistSoundPreference = value => {
+      try {
+        localStorage.setItem('tmwSound', value);
+      } catch (error) {
+        // ignore persistence errors
+      }
+    };
+
     const updateSoundLabel = () => {
-      soundToggle.textContent = soundEnabled ? '🔊 Sound On' : '🔇 Enable Sound';
+      const isActive = Boolean(soundEnabled);
+      const label = isActive ? '🔊 Sound On' : '🔇 Enable Sound';
+      soundToggle.textContent = label;
+      soundToggle.setAttribute('aria-label', isActive ? 'Sound On' : 'Enable Sound');
+      soundToggle.classList.toggle('active', isActive);
     };
 
     updateSoundLabel();
+
+    const enableSoundOnLoad = () => {
+      const audioToggle = document.getElementById('soundToggle') || soundToggle;
+      if (audioToggle && !audioToggle.classList.contains('active')) {
+        audioToggle.classList.add('active');
+        soundEnabled = true;
+        persistSoundPreference('on');
+        updateSoundLabel();
+      }
+    };
+
+    // Auto-enable sound on page load
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', enableSoundOnLoad);
+    } else {
+      enableSoundOnLoad();
+    }
 
     soundToggle.addEventListener('click', () => {
       soundEnabled = !soundEnabled;
@@ -548,6 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!soundEnabled) {
         stopWinSound();
       }
+      persistSoundPreference(soundEnabled ? 'on' : 'off');
       updateSoundLabel();
     });
 

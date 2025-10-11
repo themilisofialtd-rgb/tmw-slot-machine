@@ -42,7 +42,10 @@
 .slot-left {
   flex: 0 0 150px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
 }
 
 .slot-btn {
@@ -64,6 +67,17 @@
   transition: all 0.2s ease-in-out;
   z-index: 5;
   line-height: 1;
+}
+
+/* --- Equal Button Size --- */
+.slot-btn,
+.slot-right .tmw-claim-bonus {
+  min-width: 200px;
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .slot-btn.is-busy {
@@ -183,16 +197,22 @@
   }
 }
 
-.slot-sound-toggle {
+/* Sound button style */
+.sound-toggle {
   font-size: 14px;
-  color: #bbb;
-  opacity: 0.9;
+  color: #aaa;
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: opacity 0.3s ease;
+  transition: color 0.3s ease;
 }
 
-.slot-sound-toggle:hover {
-  opacity: 1;
+.sound-toggle.active {
+  color: #fff;
+}
+
+.sound-toggle:hover {
+  color: #fff;
 }
 
 /* === Offer text heartbeat animation === */
@@ -286,11 +306,14 @@
     order: 2;
     width: 100%;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     margin: 0;
     background: transparent !important;
     height: auto !important;
     flex: 0 0 auto;
+    gap: 10px;
   }
 
   .slot-btn {
@@ -328,7 +351,7 @@
     animation: heartbeatWin 1.4s infinite ease-in-out;
   }
 
-  .slot-sound-toggle {
+  .sound-toggle {
     font-size: 13px;
     color: #ccc;
     margin-top: 2px;
