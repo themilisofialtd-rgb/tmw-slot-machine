@@ -109,18 +109,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
       currentButtonState = state;
 
+      const appliedState = state === BUTTON_STATES.CLAIM
+        ? BUTTON_STATES.RESET
+        : state;
+
       slotBtn.classList.remove('spin', 'claim', 'reset', 'spin-again');
       slotBtn.classList.add(SLOT_BUTTON_CLASS);
-      slotBtn.dataset.mode = state;
-      slotBtn.dataset.state = state;
+      slotBtn.dataset.mode = appliedState;
+      slotBtn.dataset.state = appliedState;
       slotBtn.disabled = Boolean(disabled);
       slotBtn.onclick = null;
 
       switch (state) {
         case BUTTON_STATES.CLAIM:
-          slotBtn.textContent = 'Claim Your Bonus';
-          slotBtn.classList.add('claim');
-          slotBtn.onclick = handleClaimClick;
+          // ⛔ Do NOT ever show "Claim…" on the left button.
+          // Treat CLAIM as RESET so left button shows "Spin Again".
+          slotBtn.textContent = 'Spin Again';
+          slotBtn.classList.add('reset', 'spin-again');
+          slotBtn.onclick = startSpin;
           break;
         case BUTTON_STATES.RESET:
           slotBtn.textContent = 'Spin Again';
@@ -179,6 +185,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
+      renderRightClaim('');
+
       const nextState = hasCompletedSpin ? BUTTON_STATES.RESET : BUTTON_STATES.SPIN;
       updateButtonState(nextState, options);
       cleanupSlotButtons();
@@ -218,6 +226,35 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     };
 
+    // Render the CLAIM CTA on the right side only
+    const renderRightClaim = (linkUrl, labelText) => {
+      const right = container.querySelector('.slot-right');
+      if (!right) {
+        return;
+      }
+
+      right
+        .querySelectorAll('.tmw-claim-bonus')
+        .forEach(node => node.remove());
+
+      const trimmed = typeof linkUrl === 'string' ? linkUrl.trim() : '';
+      if (!trimmed) {
+        return;
+      }
+
+      const claimLink = document.createElement('a');
+      claimLink.className = 'tmw-claim-bonus';
+      claimLink.href = trimmed;
+      claimLink.target = '_blank';
+      claimLink.rel = 'nofollow noopener';
+      const defaultLabel = (typeof tmwSlot !== 'undefined' && tmwSlot && tmwSlot.claimLabel)
+        ? tmwSlot.claimLabel
+        : 'Claim Your Bonus';
+      claimLink.textContent = labelText || defaultLabel;
+
+      right.appendChild(claimLink);
+    };
+
     const activateClaimButton = linkUrl => {
       const trimmedLink = typeof linkUrl === 'string' ? linkUrl.trim() : '';
 
@@ -234,10 +271,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
       hasShownWin = true;
       hasCompletedSpin = true;
-      updateButtonState(BUTTON_STATES.CLAIM);
-
-      scheduleClaimReset();
-      attachClaimResetListeners();
+      // show CTA on the right, left becomes "Spin Again"
+      renderRightClaim(trimmedLink);
+      updateButtonState(BUTTON_STATES.RESET);
       cleanupSlotButtons();
     };
 
@@ -494,17 +530,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       animateWinReveal();
 
-      // --- Placement Lock: force bonus link to right side ---
-      const bonusLink = document.querySelector('.tmw-claim-bonus');
-      const rightContainer = document.querySelector('.slot-right');
-      const leftContainer = document.querySelector('.slot-left');
-
-      if (bonusLink && rightContainer) {
-        rightContainer.appendChild(bonusLink);
-      }
-      if (bonusLink && leftContainer && leftContainer.contains(bonusLink)) {
-        bonusLink.remove();
-      }
+      // Placement safety (in case any theme scripts meddle)
+      cleanGhostBonus();
     };
 
     const ensureAudioContext = () => {
@@ -668,6 +695,7 @@ document.addEventListener('DOMContentLoaded', function() {
       clearClaimResetTimeout();
       detachClaimResetListeners();
       resultLink = '';
+      renderRightClaim('');
       slotBtn.disabled = true;
       slotBtn.classList.add('is-busy');
       validateAndLogState(currentButtonState, { disabled: true });
