@@ -45,12 +45,6 @@
   justify-content: center;
 }
 
-/* --- Placement lock: hide any ghost inside left panel --- */
-.slot-left .tmw-claim-bonus {
-  display: none !important;
-  visibility: hidden !important;
-}
-
 .slot-btn {
   position: relative;
   display: inline-flex;
@@ -143,10 +137,6 @@
   align-items: center;
   text-align: center;
   gap: 8px;
-}
-
-.slot-right .tmw-claim-bonus {
-  margin-top: 6px;
 }
 
 .slot-result {
@@ -430,10 +420,29 @@
   }
 }
 
-/* --- Final Safety Patch: Remove Ghost Bonus Layer --- */
-.tmw-claim-bonus {
+/* Claim CTA: show only on the right side */
+.slot-right .tmw-claim-bonus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 26px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #ff7a00 0%, #ff3c00 100%);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(255, 122, 0, 0.7);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slot-right .tmw-claim-bonus:hover {
+  box-shadow: 0 0 18px rgba(255, 122, 0, 0.85);
+  transform: translateY(-1px);
+}
+
+/* Never allow claim link inside the left panel */
+.slot-left .tmw-claim-bonus {
   display: none !important;
   visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
 }
