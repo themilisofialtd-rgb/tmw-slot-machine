@@ -421,19 +421,10 @@ document.addEventListener('DOMContentLoaded', function() {
         winContainer.textContent = '';
 
         if (!prizeText || prizeSpanCreated) {
-          fragment.appendChild(document.createTextNode(' '));
           winContainer.appendChild(fragment);
         } else {
-          winContainer.textContent = `${displayMessage} `;
+          winContainer.textContent = displayMessage;
         }
-
-        const linkEl = document.createElement('a');
-        linkEl.className = 'tmw-claim-bonus';
-        linkEl.target = '_blank';
-        linkEl.rel = 'nofollow noopener';
-        linkEl.textContent = 'Claim Your Bonus';
-        linkEl.href = trimmedUrl;
-        winContainer.appendChild(linkEl);
 
         result.innerHTML = '';
         result.appendChild(winContainer);
@@ -444,16 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
           result.innerHTML = '';
           const fallbackContainer = document.createElement('div');
           fallbackContainer.className = 'tmw-win-message';
-          fallbackContainer.textContent = `${displayMessage} `;
-
-          const fallbackLink = document.createElement('a');
-          fallbackLink.className = 'tmw-claim-bonus';
-          fallbackLink.target = '_blank';
-          fallbackLink.rel = 'nofollow noopener';
-          fallbackLink.textContent = 'Claim Your Bonus';
-          fallbackLink.href = trimmedUrl;
-
-          fallbackContainer.appendChild(fallbackLink);
+          fallbackContainer.textContent = displayMessage;
           result.appendChild(fallbackContainer);
           return true;
         } catch (fallbackError) {
