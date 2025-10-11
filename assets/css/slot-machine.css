@@ -178,18 +178,30 @@
 .tmw-surprise-img {
   width: 120px;
   height: 120px;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
   animation: popIn 0.6s ease;
+}
+
+.tmw-slot-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px; /* adjust to your slot height */
 }
 
 @keyframes popIn {
   0% {
-    transform: scale(0.5);
+    transform: translateY(-50%) scale(0.5);
     opacity: 0;
   }
   100% {
-    transform: scale(1);
+    transform: translateY(-50%) scale(1);
     opacity: 1;
   }
 }
