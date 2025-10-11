@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      result.textContent = 'You Win!';
+      result.textContent = '🎉 Bonus!';
       hasCompletedSpin = true;
       resetSpinButton();
       animateWinReveal();
@@ -553,7 +553,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       const trimmedTitle = String(title).trim();
-      const messageText = trimmedTitle ? `🎉 You Win ${trimmedTitle}!` : '🎉 You Win!';
+      // Simplified prize message without "You Win"
+      const messageText = trimmedTitle ? `🎉 ${trimmedTitle}!` : '🎉 Bonus!';
       const trimmedUrl = typeof url === 'string' ? url.trim() : '';
 
       const wasUpdated = updateWinMessage(messageText, url);
