@@ -170,14 +170,14 @@
 
 .tmw-win-message {
   font-size: 1.2rem;
-  color: #ff0033;
+  color: inherit; /* color:#ff0033 removed — text now inherits */
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
 }
 
 .tmw-prize-text {
-  color: #ff0033;
+  color: inherit; /* color:#ff0033 removed — text now inherits */
   font-weight: 700;
   text-shadow: 0 0 8px rgba(255, 0, 51, 0.4);
 }
@@ -329,7 +329,7 @@
 .slot-result.win-text {
   animation: pulseWin 1.5s infinite ease-in-out;
   font-weight: 700;
-  color: #ff2a2a;
+  color: inherit; /* color:#ff2a2a removed — text now inherits */
   transition: opacity 0.3s ease-in, transform 0.25s ease;
   cursor: pointer;
 }
@@ -519,7 +519,7 @@
   order: 1;  /* show second */
 }
 
-/* ===== WHITE TEXT OVERRIDE (v1.1.3b) ===== */
+/* ===== WHITE TEXT OVERRIDE (v1.1.3c) ===== */
 .tmw-slot-machine,
 .tmw-slot-machine .slot-result,
 .tmw-slot-machine .slot-result.win-text,

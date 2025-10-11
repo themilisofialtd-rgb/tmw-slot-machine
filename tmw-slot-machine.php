@@ -2,7 +2,7 @@
 /*
 Plugin Name: TMW Slot Machine
 Description: Gamified LiveJasmin promotions with variable dopamine-based spin logic to boost engagement and conversions.
-Version: 1.1.3b
+Version: 1.1.3c
 Author: Adultwebmaster69 | Top-Models Webcam Studio
 Author URI: https://top-models.webcam
 */
