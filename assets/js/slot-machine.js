@@ -239,6 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const resetForSpin = () => {
       if (result) {
+        // 🔥 Hard-clear any leftover bonus link or win container
+        result.innerHTML = '';
         result.classList.remove('show', 'win-text', 'revealed');
         result.textContent = '';
       }
@@ -466,6 +468,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
+      // 🔥 Ensure previous bonus markup is fully cleared
+      result.innerHTML = '';
       result.classList.remove('show', 'win-text', 'revealed');
 
       const offerIndex = offerMap.indexOf(iconName);
