@@ -3,7 +3,7 @@ Contributors: adultwebmaster69
 Tags: slot machine, gamification, affiliate, livejasmin
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.1.3
+Stable tag: 1.1.3b
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,9 @@ Yes. Adjust the percentage on the settings page to tune the win frequency.
 Default offers are preloaded on activation. Update the offers table from the settings screen to rotate new promotions.
 
 == Changelog ==
+= 1.1.3b =
+* Forced all slot machine UI text to pure white for consistent contrast across promotional and result messaging.
+
 = 1.1.3 =
 * Locked the UI layout so the left button always stays "Spin" focused while the claim CTA renders exclusively on the right column.
 * Added DOM hygiene watchdogs to remove ghost `.tmw-claim-bonus` links and duplicate slot buttons during async transitions.
@@ -38,6 +41,9 @@ Default offers are preloaded on activation. Update the offers table from the set
 * Initial release of the TMW Slot Machine with configurable win probability, featured offers, accent color, sound toggle, and shortcode display.
 
 == Upgrade Notice ==
+= 1.1.3b =
+Visual polish release — refresh to ensure every slot machine headline, prompt, and win message renders in high-contrast white text.
+
 = 1.1.3 =
 Finalized the stable spin/claim layout — update to stop duplicate "Claim Your Bonus" buttons and keep the CTA anchored on the right column.
 
