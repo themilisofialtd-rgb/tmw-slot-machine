@@ -3,6 +3,44 @@ const SLOT_BUTTON_CLASS = 'slot-btn';
 const slotContainer = document.querySelector('.slot-container');
 const slotBtn = document.getElementById(SLOT_BUTTON_ID);
 
+let tmwReelOrderTimeoutId = null;
+
+const tmwFixReelOrder = () => {
+  if (typeof document === 'undefined' || !document.querySelectorAll) {
+    return;
+  }
+
+  const reels = document.querySelectorAll('.tmw-slot-machine .reel');
+  reels.forEach((reel, index) => {
+    if (!reel || !reel.style) {
+      return;
+    }
+    reel.style.order = index;
+  });
+};
+
+const scheduleReelOrderFix = (delay = 600) => {
+  if (tmwReelOrderTimeoutId) {
+    clearTimeout(tmwReelOrderTimeoutId);
+  }
+
+  if (typeof window === 'undefined' || typeof window.setTimeout !== 'function') {
+    tmwFixReelOrder();
+    tmwReelOrderTimeoutId = null;
+    return;
+  }
+
+  const effectiveDelay = Number(delay);
+  const finalDelay = Number.isFinite(effectiveDelay) && effectiveDelay >= 0
+    ? effectiveDelay
+    : 600;
+
+  tmwReelOrderTimeoutId = window.setTimeout(() => {
+    tmwFixReelOrder();
+    tmwReelOrderTimeoutId = null;
+  }, finalDelay);
+};
+
 const cleanGhostBonus = context => {
   const scope = context && typeof context.querySelectorAll === 'function'
     ? context
@@ -49,6 +87,7 @@ cleanupSlotButtons();
 
 document.addEventListener('DOMContentLoaded', function() {
   cleanupSlotButtons();
+  scheduleReelOrderFix(0);
 
   const containers = document.querySelectorAll('.tmw-slot-machine');
   if (!containers.length) {
@@ -584,6 +623,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const reelList = Array.from(reels);
     setRandomIconsOnReels(reelList);
+    scheduleReelOrderFix(0);
 
     let flashIntervalId = null;
 
@@ -626,6 +666,7 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
         spinCompleted = true;
+        scheduleReelOrderFix();
         if (flashIntervalId) {
           clearInterval(flashIntervalId);
           flashIntervalId = null;
@@ -694,6 +735,7 @@ document.addEventListener('DOMContentLoaded', function() {
         slotBtn.disabled = false;
         slotBtn.classList.remove('is-busy');
         cleanupSlotButtons(container);
+        scheduleReelOrderFix();
       });
     }
 
