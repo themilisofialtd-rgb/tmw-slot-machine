@@ -491,3 +491,31 @@
 .slot-result.win-text.revealed {
   font-size: 0.9rem;
 }
+
+/* --- White headline text --- */
+.slot-heading,
+.slot-header,
+.slot-container h2,
+.slot-container h3 {
+  color: #fff !important;
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+/* --- Right-side layout: claim button above win text --- */
+.slot-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px; /* space between button and win text */
+}
+
+/* Ensure claim button sits above the win text visually */
+.slot-right .tmw-claim-bonus {
+  order: 0;  /* show first */
+}
+
+.slot-right .slot-result {
+  order: 1;  /* show second */
+}
+
