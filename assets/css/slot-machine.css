@@ -542,3 +542,12 @@ body .tmw-slot-machine h2,
 body .tmw-slot-machine .slot-header {
   color: #fff !important;
 }
+
+/* --- Final White Text Enforcement (v1.1.3f) --- */
+/* Forces all text (titles, win messages, offers) to white,
+   but keeps button colors untouched. */
+body .tmw-slot-machine,
+body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
+  color: #ffffff !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+}
