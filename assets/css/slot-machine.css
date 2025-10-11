@@ -739,3 +739,61 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   }
 }
 
+/* === v1.4.8i — Mobile Layout Optimization === */
+@media (max-width: 700px) {
+  /* Stretch slot box full width */
+  .tmw-slot-machine {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 16px 10px !important;
+  }
+
+  /* Center everything vertically */
+  .tmw-slot-machine .slot-body {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    row-gap: 10px !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  /* Scale reels slightly larger for better tap size */
+  .tmw-slot-machine .slot-reels {
+    justify-content: center !important;
+    gap: 12px !important;
+    margin-top: 8px !important;
+  }
+
+  .tmw-slot-machine .reel {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  /* Make buttons proportional and centered */
+  .tmw-slot-machine .slot-btn {
+    width: 90% !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+    font-size: 1rem !important;
+    padding: 12px 0 !important;
+  }
+
+  .tmw-slot-machine .sound-toggle {
+    margin-top: 6px !important;
+  }
+
+  /* Balance spacing after spin */
+  .tmw-slot-machine .slot-right {
+    margin-top: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .tmw-slot-machine .slot-result {
+    margin-top: 6px !important;
+    font-size: 1rem !important;
+  }
+}
