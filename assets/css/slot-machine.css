@@ -814,3 +814,12 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
     transform: none !important;
   }
 }
+/* v1.1.3n — Show Surprise on Mobile (override old mobile hide) */
+@media (max-width: 991px) {
+  .tmw-surprise-img {
+    display: block !important;     /* overrides old display:none */
+    width: clamp(140px, 60vw, 260px) !important;
+    height: auto !important;
+    margin: 0 auto !important;
+  }
+}
