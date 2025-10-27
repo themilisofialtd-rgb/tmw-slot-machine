@@ -42,14 +42,14 @@ function tmw_slot_machine_enqueue_assets() {
         'tmw-slot-machine',
         plugins_url('assets/css/slot-machine.css', __FILE__),
         [],
-        '1.4.8'
+        '1.4.8p'
     );
 
     wp_enqueue_script(
         'tmw-slot-machine',
         plugins_url('assets/js/slot-machine.js', __FILE__),
         ['jquery'],
-        '1.4.8',
+        '1.4.8p',
         true
     );
 

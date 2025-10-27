@@ -151,6 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show surprise on all viewports (desktop + mobile) before first spin
     const shouldShowSurprise = true;
+    // Mobile allowed: no viewport guard here
     if (shouldShowSurprise) {
       const surpriseTarget = container.querySelector('.tmw-slot-placeholder') || result;
       if (surpriseTarget && !surpriseTarget.querySelector('.tmw-surprise-img')) {
