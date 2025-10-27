@@ -149,7 +149,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     };
 
-    const shouldShowSurprise = typeof window !== 'undefined' && window.innerWidth >= 992;
+    // Show surprise on all viewports (desktop + mobile) before first spin
+    const shouldShowSurprise = true;
     if (shouldShowSurprise) {
       const surpriseTarget = container.querySelector('.tmw-slot-placeholder') || result;
       if (surpriseTarget && !surpriseTarget.querySelector('.tmw-surprise-img')) {
