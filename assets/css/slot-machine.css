@@ -857,3 +857,21 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 @media (max-width: 991px) {
   html body .tmw-surprise-img { display: block !important; }
 }
+/* v1.4.8r — Mobile Surprise PNG sizing & centering */
+@media (max-width: 991px) {
+  /* center its row without changing the rest of the layout */
+  .tmw-slot-placeholder {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* make the surprise image smaller on phones */
+  .tmw-surprise-img {
+    display: block !important;
+    width: clamp(90px, 34vw, 150px) !important; /* ↓ smaller than before */
+    height: auto !important;
+    margin: 12px auto 0 !important;
+    transform: none !important;
+  }
+}
