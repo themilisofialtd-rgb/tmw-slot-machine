@@ -212,9 +212,20 @@
   }
 }
 
+/* v1.1.3p — Show Surprise on Mobile (override old mobile hide) */
 @media (max-width: 991px) {
+  .tmw-slot-placeholder {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 120px !important;
+  }
   .tmw-surprise-img {
-    display: none !important;
+    display: block !important;
+    width: clamp(140px, 60vw, 260px) !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    transform: none !important;
   }
 }
 
@@ -821,5 +832,13 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
     width: clamp(140px, 60vw, 260px) !important;
     height: auto !important;
     margin: 0 auto !important;
+  }
+}
+
+/* v1.1.3p — Final guard to ensure visibility on small screens */
+@media (max-width: 991px) {
+  html body .tmw-slot-machine .tmw-slot-placeholder .tmw-surprise-img,
+  html body .tmw-surprise-img {
+    display: block !important;
   }
 }
