@@ -833,8 +833,40 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 }
 
 /* =========================================================
-   [TMW-SLOT-UI-COLORS] v1.1.3m
-   Single source of truth for button colors
+   [TMW-SLOT-CLICK-FIX] v1.1.3r
+   Ensure buttons stay clickable on desktop.
+   Keeps layout & visuals unchanged.
+   ========================================================= */
+.tmw-slot-machine .slot-body { position: relative; }
+
+/* Raise interactive layers */
+.tmw-slot-machine .slot-left,
+.tmw-slot-machine .slot-right { position: relative; z-index: 5; }
+
+.tmw-slot-machine .slot-btn,
+.tmw-slot-machine .tmw-claim-bonus,
+.tmw-slot-machine .sound-toggle {
+  position: relative;
+  z-index: 10;        /* above center visuals */
+  pointer-events: auto;
+}
+
+/* Make decorative layers click-through */
+.tmw-slot-machine .slot-center,
+.tmw-slot-machine .slot-reels,
+.tmw-slot-machine .tmw-slot-placeholder,
+.tmw-slot-machine .tmw-surprise-img {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;  /* prevent stealing clicks after ~1s */
+}
+
+/* Pseudo overlays must never block clicks */
+.tmw-slot-machine .slot-body::before,
+.tmw-slot-machine .slot-body::after { pointer-events: none !important; }
+
+/* =========================================================
+   [TMW-SLOT-UI-COLORS] v1.1.3r — Single source of truth
    Spin Now / Spin Again => ORANGE
    Claim Your Bonus      => RED
    ========================================================= */
@@ -844,7 +876,7 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   --tmw-ring-opacity: 0.45;
 }
 
-/* SPIN (left) — applies to Spin Now + Spin Again button */
+/* SPIN (left) — applies to Spin Now + Spin Again */
 .tmw-slot-machine .slot-btn {
   background: linear-gradient(180deg, var(--tmw-spin-orange) 0%, #ff3c00 100%);
   color: #fff;
@@ -877,46 +909,4 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
     0 0 0 3px rgba(229,57,53,var(--tmw-ring-opacity)),
     0 0 12px rgba(255,0,0,0.7);
 }
-
-/* Keep heartbeat animation rules you already have; only color/glow lives here */
-/* =========================================================
-   [TMW-SLOT-CLICK-FIX] v1.1.3o
-   Ensure Spin/Claim/Sound are clickable by placing them
-   above decorative layers and disabling pointer events on
-   overlays (reels/placeholder/surprise img).
-   No layout or color changes.
-   ========================================================= */
-
-.tmw-slot-machine .slot-body { position: relative; }
-
-/* Buttons & interactive controls must sit on top */
-.tmw-slot-machine .slot-left,
-.tmw-slot-machine .slot-right { position: relative; z-index: 5; }
-
-.tmw-slot-machine .slot-btn,
-.tmw-slot-machine .tmw-claim-bonus,
-.tmw-slot-machine .sound-toggle {
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-/* Decorative / non-interactive layers below and click-through */
-.tmw-slot-machine .slot-center,
-.tmw-slot-machine .slot-reels,
-.tmw-slot-machine .tmw-slot-placeholder,
-.tmw-slot-machine .tmw-surprise-img {
-  position: relative;
-  z-index: 1;
-}
-
-.tmw-slot-machine .tmw-slot-placeholder,
-.tmw-slot-machine .tmw-surprise-img {
-  pointer-events: none; /* don’t steal clicks from buttons */
-}
-
-/* Guard: any absolutely positioned overlay inside the slot should not block clicks */
-.tmw-slot-machine .slot-body > * { pointer-events: auto; }
-.tmw-slot-machine .slot-body::before,
-.tmw-slot-machine .slot-body::after { pointer-events: none; }
 
