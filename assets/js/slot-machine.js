@@ -87,6 +87,21 @@ const cleanupSlotButtons = context => {
   cleanGhostBonus(root);
 };
 
+function enforceClickability(root) {
+  try {
+    const sel = [
+      '.slot-center',
+      '.slot-reels',
+      '.tmw-slot-placeholder',
+      '.tmw-surprise-img',
+      '.slot-center *'
+    ].join(',');
+    root.querySelectorAll(sel).forEach(el => {
+      el.style.pointerEvents = 'none';
+    });
+  } catch (e) {}
+}
+
 cleanGhostBonus();
 cleanupSlotButtons();
 
@@ -181,6 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
     ghostObserver.observe(container, { childList: true, subtree: true });
 
     result.classList.add('slot-result');
+    enforceClickability(container);
+    setTimeout(() => enforceClickability(container), 1200);
 
     const BUTTON_STATES = {
       SPIN: 'spin',
