@@ -904,3 +904,67 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 .tmw-slot-machine .slot-body::before,
 .tmw-slot-machine .slot-body::after { pointer-events: none !important; }
 
+
+/* =========================================================
+   [TMW-DEBUG] v1.1.6d — Visual overlays for click audit
+   Active only when <html> or <body> has .tmw-debug
+   ========================================================= */
+.tmw-debug .tmw-slot-machine .slot-btn,
+.tmw-debug .tmw-slot-machine .tmw-claim-bonus,
+.tmw-debug .tmw-slot-machine .sound-toggle {
+  outline: 2px solid #20c997 !important; /* teal = interactive */
+  outline-offset: 2px;
+}
+
+.tmw-debug .tmw-slot-machine .slot-center,
+.tmw-debug .tmw-slot-machine .slot-reels,
+.tmw-debug .tmw-slot-machine .tmw-slot-placeholder,
+.tmw-debug .tmw-slot-machine .tmw-surprise-img,
+.tmw-debug .tmw-slot-machine .slot-center * {
+  outline: 2px dashed #ffcd39 !important; /* yellow = decorative */
+}
+
+/* Element currently covering the Spin/Sound center point */
+.tmw-debug [data-tmw-clickshield="1"] {
+  outline: 3px solid #ff4d4f !important; /* red = shield */
+  outline-offset: 2px;
+}
+
+/* Small in-slot HUD */
+.tmw-slot-machine .tmw-debug-hud {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  z-index: 2147483647;
+  font: 12px/1.35 monospace;
+  background: rgba(0,0,0,0.8);
+  color: #e7e7e7;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+  max-width: 320px;
+  pointer-events: auto; /* allow clicking HUD toggles */
+  user-select: text;
+}
+
+.tmw-slot-machine .tmw-debug-hud button {
+  margin-right: 6px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Optional debug guard class you can toggle from HUD */
+.tmw-slot-machine.tmw-guard-on .slot-center,
+.tmw-slot-machine.tmw-guard-on .slot-reels,
+.tmw-slot-machine.tmw-guard-on .tmw-slot-placeholder,
+.tmw-slot-machine.tmw-guard-on .tmw-surprise-img,
+.tmw-slot-machine.tmw-guard-on .slot-center * {
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+

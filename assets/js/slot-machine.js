@@ -1038,3 +1038,137 @@ document.addEventListener('DOMContentLoaded', () => {
   const reels = document.querySelectorAll('.reel');
   setRandomIconsOnReels(reels);
 });
+
+/* =========================================================
+   [TMW-DEBUG] v1.1.6d — Desktop clickability HUD & logs
+   Enabled only with ?tmwDebug=1
+   No effect for normal visitors
+   ========================================================= */
+(function(){
+  try {
+    const params = new URLSearchParams(location.search);
+    if (!params.get('tmwDebug')) return;
+
+    document.documentElement.classList.add('tmw-debug');
+    document.body.classList.add('tmw-debug');
+
+    // Find the current slot container (first one on page)
+    const container = document.querySelector('.tmw-slot-machine');
+    if (!container) { console.warn('[TMW-DEBUG] no .tmw-slot-machine'); return; }
+
+    // Build HUD
+    const hud = document.createElement('div');
+    hud.className = 'tmw-debug-hud';
+    hud.innerHTML =
+      '<div style="margin-bottom:6px;font-weight:700;">TMW DEBUG</div>' +
+      '<div style="margin-bottom:6px;">Spin top: <span id="tmwTopSpin">—</span></div>' +
+      '<div style="margin-bottom:6px;">Sound top: <span id="tmwTopSound">—</span></div>' +
+      '<div style="margin-bottom:6px;">Claim top: <span id="tmwTopClaim">—</span></div>' +
+      '<div style="margin-bottom:6px;">Last mutation: <span id="tmwMut">—</span></div>' +
+      '<div style="margin-bottom:6px;">' +
+        '<button id="tmwToggleGuard" type="button">Guard: OFF</button>' +
+        '<button id="tmwSnapshot" type="button">Snapshot</button>' +
+      '</div>' +
+      '<div id="tmwLog" style="max-height:160px;overflow:auto;white-space:pre-wrap;"></div>';
+    container.style.position = container.style.position || 'relative';
+    container.appendChild(hud);
+
+    const elSpin  = container.querySelector('.slot-btn');
+    const elSound = container.querySelector('.sound-toggle');
+    const elClaim = container.querySelector('.tmw-claim-bonus');
+
+    function centerPoint(el){
+      const r = el.getBoundingClientRect();
+      return { x: Math.round(r.left + r.width/2), y: Math.round(r.top + r.height/2) };
+    }
+
+    function cssPath(el){
+      if (!el || !el.tagName) return String(el);
+      const out = [];
+      let cur = el;
+      while (cur && cur.nodeType === 1 && out.length < 6) {
+        const id = cur.id ? '#' + cur.id : '';
+        const cls = (cur.className && typeof cur.className === 'string')
+          ? '.' + cur.className.trim().split(/\s+/).slice(0,2).join('.') : '';
+        out.unshift(cur.tagName.toLowerCase() + id + cls);
+        cur = cur.parentElement;
+      }
+      return out.join(' > ');
+    }
+
+    function topAt(el){
+      if (!el) return null;
+      const {x,y} = centerPoint(el);
+      const top = document.elementFromPoint(x,y);
+      if (top) {
+        // flag as click-shield if it isn't the control itself
+        if (top !== el && !el.contains(top)) top.setAttribute('data-tmw-clickshield','1');
+      }
+      const cs = top ? getComputedStyle(top) : null;
+      return {
+        node: top,
+        hint: top ? cssPath(top) : 'null',
+        pe: cs ? cs.pointerEvents : '—',
+        z: cs ? cs.zIndex : '—',
+        pos: cs ? cs.position : '—',
+        tf: cs ? cs.transform : '—',
+        op: cs ? cs.opacity : '—'
+      };
+    }
+
+    function setTxt(id, txt){ const n = hud.querySelector('#'+id); if (n) n.textContent = txt; }
+    function log(txt){ const l = hud.querySelector('#tmwLog'); if (l) { l.textContent += txt + '\n'; l.scrollTop = l.scrollHeight; } }
+
+    function update(){
+      const a = topAt(elSpin);
+      const b = topAt(elSound);
+      const c = topAt(elClaim);
+      setTxt('tmwTopSpin',  a ? a.hint + ' | pe:' + a.pe + ' z:' + a.z : '—');
+      setTxt('tmwTopSound', b ? b.hint + ' | pe:' + b.pe + ' z:' + b.z : '—');
+      setTxt('tmwTopClaim', c ? c.hint + ' | pe:' + c.pe + ' z:' + c.z : '—');
+    }
+
+    // Toggle guard ON/OFF to force-clickable test
+    hud.querySelector('#tmwToggleGuard').addEventListener('click', function(){
+      const on = container.classList.toggle('tmw-guard-on');
+      this.textContent = 'Guard: ' + (on ? 'ON' : 'OFF');
+      update();
+      log('[TMW-DEBUG] Guard ' + (on ? 'ENABLED' : 'DISABLED'));
+    });
+
+    // Manual snapshot
+    hud.querySelector('#tmwSnapshot').addEventListener('click', function(){
+      update();
+      log('[TMW-DEBUG] Snapshot: ' + (new Date()).toISOString());
+    });
+
+    // Global click-phase logger for the slot
+    ['capture','bubble'].forEach(phase => {
+      const useCapture = phase === 'capture';
+      container.addEventListener('click', function(ev){
+        log('[TMW-DEBUG] click ' + phase + ' target=' + cssPath(ev.target));
+      }, useCapture);
+    });
+
+    // Mutation logger on center visuals (common offenders)
+    const mutTarget = container.querySelector('.slot-center') || container;
+    const mo = new MutationObserver(muts => {
+      const m = muts[0];
+      const t = (m && m.target) ? cssPath(m.target) : '—';
+      setTxt('tmwMut', t);
+      update();
+      console.warn('[TMW-DEBUG] mutation:', m);
+    });
+    mo.observe(mutTarget, { childList:true, subtree:true, attributes:true, attributeFilter:['class','style'] });
+
+    // Initial & periodic updates, plus a delayed update (~1s after load)
+    update();
+    setTimeout(update, 1200);
+    setInterval(update, 500);
+
+    console.log('%c[TMW-DEBUG] Debug HUD active (?tmwDebug=1). Use Guard toggle and Snapshot.','background:#222;color:#0f0;padding:3px 5px;border-radius:3px;');
+  } catch(e) {
+    console.error('[TMW-DEBUG] error', e);
+  }
+})();
+
