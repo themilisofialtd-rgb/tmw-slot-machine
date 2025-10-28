@@ -94,7 +94,8 @@ function tmwMakeButtonsClickable(root) {
 
   const btn = root.querySelector('.slot-btn');
   const claim = root.querySelector('.tmw-claim-bonus');
-  [btn, claim].forEach(el => {
+  const sound = root.querySelector('#soundToggle, .sound-toggle, .tmw-sound-toggle');
+  [btn, claim, sound].forEach(el => {
     if (!el || !el.style) {
       return;
     }

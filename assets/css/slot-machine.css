@@ -830,7 +830,7 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 }
 
 /* =========================================================
-   [TMW-SLOT-UI-COLORS] v1.1.6 — SINGLE SOURCE OF TRUTH
+   [TMW-SLOT-UI-COLORS] v1.1.6b — SINGLE SOURCE OF TRUTH
    Spin Now / Spin Again => ORANGE
    Claim Your Bonus      => RED
    ========================================================= */
@@ -850,62 +850,57 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 .tmw-slot-machine .slot-btn:hover  { filter: brightness(0.96); }
 .tmw-slot-machine .slot-btn:active { filter: brightness(0.90); }
 .tmw-slot-machine .slot-btn:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+  outline: 2px solid #fff; outline-offset: 2px;
   box-shadow:
     0 0 0 3px rgba(255,122,0,var(--tmw-ring-opacity)),
     0 0 12px rgba(255,122,0,0.7);
 }
 
-/* CLAIM (right) — red CTA button/link */
+/* CLAIM (right) — red CTA */
 .tmw-slot-machine .slot-right .tmw-claim-bonus {
-  background: linear-gradient(180deg, #ff0000 0%, #b90000 100%); /* red family */
-  color: #fff;
-  border: none;
+  background: linear-gradient(180deg, var(--tmw-claim-red) 0%, #b90000 100%);
+  color: #fff; border: none;
   box-shadow: 0 0 12px rgba(255,0,0,0.7);
 }
 .tmw-slot-machine .slot-right .tmw-claim-bonus:hover  { filter: brightness(0.96); }
 .tmw-slot-machine .slot-right .tmw-claim-bonus:active { filter: brightness(0.90); }
 .tmw-slot-machine .slot-right .tmw-claim-bonus:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+  outline: 2px solid #fff; outline-offset: 2px;
   box-shadow:
     0 0 0 3px rgba(229,57,53,var(--tmw-ring-opacity)),
     0 0 12px rgba(255,0,0,0.7);
 }
 
 /* =========================================================
-   [TMW-SLOT-CLICK-FIX] v1.1.6 — ENFORCED (MUST BE LAST)
-   Prevent any center visuals or pseudos from catching clicks.
-   No layout/JS changes; mobile unaffected.
+   [TMW-SLOT-CLICK-FIX] v1.1.6b — FINAL GUARD (MUST BE LAST)
+   Only the intended controls can capture clicks inside the slot.
    ========================================================= */
 .tmw-slot-machine .slot-body { position: relative; }
 
-/* Buttons & controls on top */
-.tmw-slot-machine .slot-left,
-.tmw-slot-machine .slot-right { position: relative; z-index: 2147483645 !important; }
+/* 1) Default EVERYTHING inside the slot to ignore pointer events */
+.tmw-slot-machine .slot-body * {
+  pointer-events: none !important;
+}
+
+/* 2) Explicitly re-enable the intended controls */
 .tmw-slot-machine .slot-btn,
 .tmw-slot-machine .tmw-claim-bonus,
 .tmw-slot-machine .sound-toggle {
-  position: relative;
-  z-index: 2147483646 !important;
   pointer-events: auto !important;
+  position: relative;
+  z-index: 2147483646 !important; /* above any visuals in the slot */
 }
 
-/* Center visuals are decorative: never intercept clicks */
+/* 3) Keep center visuals below (belt-and-suspenders) */
 .tmw-slot-machine .slot-center,
 .tmw-slot-machine .slot-reels,
 .tmw-slot-machine .tmw-slot-placeholder,
 .tmw-slot-machine .tmw-surprise-img,
 .tmw-slot-machine .slot-center * {
-  position: relative;
   z-index: 1 !important;
-  pointer-events: none !important;
 }
 
-/* Pseudos must be click-through */
+/* 4) Pseudo overlays must be click-through */
 .tmw-slot-machine .slot-body::before,
-.tmw-slot-machine .slot-body::after {
-  pointer-events: none !important;
-}
+.tmw-slot-machine .slot-body::after { pointer-events: none !important; }
 
