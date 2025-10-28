@@ -37,33 +37,43 @@ function tmw_slot_machine_asset_version($relative_path) {
     return file_exists($path) ? filemtime($path) : false;
 }
 
-function tmw_slot_machine_enqueue_assets() {
-    wp_enqueue_style(
-        'tmw-slot-machine',
-        plugins_url('assets/css/slot-machine.css', __FILE__),
-        [],
-        '1.4.8r'
-    );
+add_action('wp_enqueue_scripts', function () {
+    if (is_admin()) {
+        return;
+    }
 
-    wp_enqueue_script(
-        'tmw-slot-machine',
-        plugins_url('assets/js/slot-machine.js', __FILE__),
-        ['jquery'],
-        '1.4.8r',
+    if (!is_singular('model')) {
+        return;
+    }
+
+    $base = plugins_url('assets/', __FILE__);
+
+    // CSS (canonical)
+    wp_register_style(
+        'tmw-slot-css',
+        $base . 'css/slot-machine.css',
+        [],
+        '1.1.6g'
+    );
+    wp_enqueue_style('tmw-slot-css');
+
+    // JS (footer, after DOM, avoids early race with AO)
+    wp_register_script(
+        'tmw-slot-js',
+        $base . 'js/slot-machine.js',
+        [],
+        '1.1.6g',
         true
     );
+    wp_enqueue_script('tmw-slot-js');
 
-    $settings         = get_option('tmw_slot_machine_settings', []);
-    $win_probability  = isset($settings['win_rate']) ? (int) $settings['win_rate'] : 50;
-    $win_probability  = max(0, min(100, $win_probability));
+    $settings        = get_option('tmw_slot_machine_settings', []);
+    $win_probability = isset($settings['win_rate']) ? (int) $settings['win_rate'] : 50;
+    $win_probability = max(0, min(100, $win_probability));
 
-    // Provide JS access to the plugin URL for image and asset paths
     $offers = get_option('tmw_slot_machine_offers', []);
-    if (empty($offers)) {
-        $settings = get_option('tmw_slot_machine_settings', []);
-        if (!empty($settings['offers'])) {
-            $offers = $settings['offers'];
-        }
+    if (empty($offers) && !empty($settings['offers'])) {
+        $offers = $settings['offers'];
     }
 
     $headline = get_option('tmw_slot_trigger_headline', TMW_SLOT_MACHINE_DEFAULT_HEADLINE);
@@ -71,20 +81,18 @@ function tmw_slot_machine_enqueue_assets() {
         $headline = TMW_SLOT_MACHINE_DEFAULT_HEADLINE;
     }
 
-    wp_localize_script('tmw-slot-machine', 'tmwSlot', [
+    wp_localize_script('tmw-slot-js', 'tmwSlot', [
         'url'       => plugins_url('', __FILE__),
         'assetsUrl' => plugins_url('assets', __FILE__),
         'winRate'   => $win_probability,
         'offers'    => is_array($offers) ? array_values($offers) : [],
         'headline'  => wp_strip_all_tags($headline),
     ]);
-}
+}, 99);
 
 // Register shortcode
 add_shortcode('tmw_slot_machine', 'tmw_slot_machine_display');
 function tmw_slot_machine_display() {
-    tmw_slot_machine_enqueue_assets();
-
     ob_start();
     include TMW_SLOT_MACHINE_PATH . 'templates/slot-machine-display.php';
     return ob_get_clean();
