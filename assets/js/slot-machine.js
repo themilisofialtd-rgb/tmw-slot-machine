@@ -87,19 +87,32 @@ const cleanupSlotButtons = context => {
   cleanGhostBonus(root);
 };
 
-function enforceClickability(root) {
-  try {
-    const sel = [
-      '.slot-center',
-      '.slot-reels',
-      '.tmw-slot-placeholder',
-      '.tmw-surprise-img',
-      '.slot-center *'
-    ].join(',');
-    root.querySelectorAll(sel).forEach(el => {
-      el.style.pointerEvents = 'none';
-    });
-  } catch (e) {}
+function tmwMakeButtonsClickable(root) {
+  if (!root || !root.querySelector) {
+    return;
+  }
+
+  const btn = root.querySelector('.slot-btn');
+  const claim = root.querySelector('.tmw-claim-bonus');
+  [btn, claim].forEach(el => {
+    if (!el || !el.style) {
+      return;
+    }
+    el.style.position = 'relative';
+    el.style.zIndex = '2147483646';
+    el.style.pointerEvents = 'auto';
+  });
+
+  const shields = root.querySelectorAll(
+    '.slot-center, .slot-reels, .tmw-slot-placeholder, .tmw-surprise-img, .slot-center *'
+  );
+  shields.forEach(el => {
+    if (!el || !el.style) {
+      return;
+    }
+    el.style.pointerEvents = 'none';
+    el.style.zIndex = '1';
+  });
 }
 
 cleanGhostBonus();
@@ -196,8 +209,18 @@ document.addEventListener('DOMContentLoaded', function() {
     ghostObserver.observe(container, { childList: true, subtree: true });
 
     result.classList.add('slot-result');
-    enforceClickability(container);
-    setTimeout(() => enforceClickability(container), 1200);
+    tmwMakeButtonsClickable(container);
+    setTimeout(() => tmwMakeButtonsClickable(container), 1500);
+
+    if (typeof MutationObserver === 'function') {
+      const tmwClickShieldObserver = new MutationObserver(() => tmwMakeButtonsClickable(container));
+      tmwClickShieldObserver.observe(container, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+    }
 
     const BUTTON_STATES = {
       SPIN: 'spin',
