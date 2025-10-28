@@ -833,7 +833,7 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 }
 
 /* =========================================================
-   [TMW-SLOT-UI-COLORS] v1.1.3r — Single source of truth
+   [TMW-SLOT-UI-COLORS] v1.1.4 — Single source of truth
    Spin Now / Spin Again => ORANGE
    Claim Your Bonus      => RED
    ========================================================= */
@@ -855,12 +855,10 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 .tmw-slot-machine .slot-btn:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
-  box-shadow:
-    0 0 0 3px rgba(255,122,0,var(--tmw-ring-opacity)),
-    0 0 12px rgba(255,122,0,0.7);
+  box-shadow: 0 0 0 3px rgba(255,122,0,var(--tmw-ring-opacity)), 0 0 12px rgba(255,122,0,0.7);
 }
 
-/* CLAIM (right) — red paint for the CTA link/button */
+/* CLAIM (right) — red CTA */
 .tmw-slot-machine .slot-right .tmw-claim-bonus {
   background: linear-gradient(180deg, #ff0000 0%, #b90000 100%);
   color: #fff;
@@ -872,34 +870,30 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 .tmw-slot-machine .slot-right .tmw-claim-bonus:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
-  box-shadow:
-    0 0 0 3px rgba(229,57,53,var(--tmw-ring-opacity)),
-    0 0 12px rgba(255,0,0,0.7);
+  box-shadow: 0 0 0 3px rgba(229,57,53,var(--tmw-ring-opacity)), 0 0 12px rgba(255,0,0,0.7);
 }
 
-
 /* =========================================================
-   [TMW-SLOT-CLICK-FIX] v1.1.3s — ENFORCED
-   Keep buttons clickable on desktop under any later CSS.
-   No layout/JS changes. Mobile unaffected.
+   [TMW-SLOT-CLICK-FIX] v1.1.4 — ENFORCED (final in file)
+   Prevent any decorative layer from stealing clicks.
    ========================================================= */
 .tmw-slot-machine .slot-body { position: relative; }
 
 .tmw-slot-machine .slot-left,
 .tmw-slot-machine .slot-right {
   position: relative;
-  z-index: 995 !important; /* below buttons, above visuals */
+  z-index: 995 !important; /* just under buttons */
 }
 
 .tmw-slot-machine .slot-btn,
 .tmw-slot-machine .tmw-claim-bonus,
 .tmw-slot-machine .sound-toggle {
   position: relative;
-  z-index: 999 !important;       /* top-most interactive layer */
+  z-index: 999 !important;  /* top interactive layer */
   pointer-events: auto !important;
 }
 
-/* All center visuals are decorative: never catch clicks */
+/* Center visuals are decorative: never catch clicks */
 .tmw-slot-machine .slot-center,
 .tmw-slot-machine .slot-reels,
 .tmw-slot-machine .tmw-slot-placeholder,
@@ -912,7 +906,4 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 
 /* Pseudo overlays must never block clicks */
 .tmw-slot-machine .slot-body::before,
-.tmw-slot-machine .slot-body::after {
-  pointer-events: none !important;
-}
-
+.tmw-slot-machine .slot-body::after { pointer-events: none !important; }
