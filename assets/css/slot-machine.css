@@ -883,3 +883,26 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 .tmw-slot-machine::after,
 .tmw-slot-machine .slot-body::before,
 .tmw-slot-machine .slot-body::after { pointer-events:none !important; }
+/* =========================================================
+   [TMW-SLOT-CLICK-FIX] v1.1.6h — external shield neutralizer
+   HUD showed .post-tags.entry-tags covering the slot.
+   1) Raise the entire slot above siblings
+   2) Make the adjacent tags block click-through on model pages
+   ========================================================= */
+
+/* 1) Put the slot above non-positioned / later siblings */
+.tmw-slot-machine{
+  position: relative !important;
+  z-index: 2147483647 !important; /* sit above nearby content */
+}
+
+/* 2) If a tags block sits after the slot, don't let it capture clicks */
+.single-model .entry-content .post-tags.entry-tags{
+  pointer-events: none !important;
+}
+
+/* (optional, more targeted: only when it follows the slot in the same tab) */
+.single-model .entry-content .tmw-slot-machine ~ .post-tags.entry-tags{
+  pointer-events: none !important;
+}
+
