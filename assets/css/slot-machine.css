@@ -58,8 +58,6 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: none;
-  color: #fff;
   font-weight: 700;
   font-size: 16px;
   white-space: nowrap;
@@ -69,8 +67,6 @@
   transition: all 0.2s ease-in-out;
   z-index: 5;
   line-height: 1;
-  background: linear-gradient(180deg, #ff0000 0%, #c40000 100%);
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
 }
 
 /* --- Equal Button Size --- */
@@ -91,17 +87,6 @@
 
 .slot-btn:hover {
   transform: scale(1.05);
-  filter: brightness(0.96);
-}
-
-.slot-btn:active {
-  filter: brightness(0.9);
-}
-
-.slot-btn:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.45), 0 0 12px rgba(255, 0, 0, 0.7);
 }
 
 
@@ -110,32 +95,6 @@
   display: inline-flex;
   position: relative;
   z-index: 1;
-}
-
-/* Canonical claim paints (orange gradient) */
-.slot-btn.claim,
-.slot-right .tmw-claim-bonus {
-  background: linear-gradient(180deg, #ff7a00 0%, #ff3c00 100%);
-  color: #fff;
-  border: none;
-  box-shadow: 0 0 12px rgba(255, 122, 0, 0.7);
-}
-
-.slot-btn.claim:hover,
-.slot-right .tmw-claim-bonus:hover {
-  filter: brightness(0.96);
-}
-
-.slot-btn.claim:active,
-.slot-right .tmw-claim-bonus:active {
-  filter: brightness(0.9);
-}
-
-.slot-btn.claim:focus-visible,
-.slot-right .tmw-claim-bonus:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.45), 0 0 12px rgba(255, 122, 0, 0.7);
 }
 
 .slot-btn.claim.active + .slot-btn.spin-again,
@@ -871,12 +830,58 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 }
 
 /* =========================================================
-   [TMW-SLOT-CLICK-FIX] v1.1.5 — ENFORCED (must be last)
-   Prevent any center visuals/pseudos from stealing clicks.
+   [TMW-SLOT-UI-COLORS] v1.1.6 — SINGLE SOURCE OF TRUTH
+   Spin Now / Spin Again => ORANGE
+   Claim Your Bonus      => RED
+   ========================================================= */
+.tmw-slot-machine {
+  --tmw-spin-orange: #FF7A00;
+  --tmw-claim-red:   #E53935;
+  --tmw-ring-opacity: 0.45;
+}
+
+/* SPIN (left) — Spin Now + Spin Again */
+.tmw-slot-machine .slot-btn {
+  background: linear-gradient(180deg, var(--tmw-spin-orange) 0%, #ff3c00 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 12px rgba(255,122,0,0.7);
+}
+.tmw-slot-machine .slot-btn:hover  { filter: brightness(0.96); }
+.tmw-slot-machine .slot-btn:active { filter: brightness(0.90); }
+.tmw-slot-machine .slot-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 3px rgba(255,122,0,var(--tmw-ring-opacity)),
+    0 0 12px rgba(255,122,0,0.7);
+}
+
+/* CLAIM (right) — red CTA button/link */
+.tmw-slot-machine .slot-right .tmw-claim-bonus {
+  background: linear-gradient(180deg, #ff0000 0%, #b90000 100%); /* red family */
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 12px rgba(255,0,0,0.7);
+}
+.tmw-slot-machine .slot-right .tmw-claim-bonus:hover  { filter: brightness(0.96); }
+.tmw-slot-machine .slot-right .tmw-claim-bonus:active { filter: brightness(0.90); }
+.tmw-slot-machine .slot-right .tmw-claim-bonus:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 3px rgba(229,57,53,var(--tmw-ring-opacity)),
+    0 0 12px rgba(255,0,0,0.7);
+}
+
+/* =========================================================
+   [TMW-SLOT-CLICK-FIX] v1.1.6 — ENFORCED (MUST BE LAST)
+   Prevent any center visuals or pseudos from catching clicks.
+   No layout/JS changes; mobile unaffected.
    ========================================================= */
 .tmw-slot-machine .slot-body { position: relative; }
 
-/* Buttons over everything inside the slot */
+/* Buttons & controls on top */
 .tmw-slot-machine .slot-left,
 .tmw-slot-machine .slot-right { position: relative; z-index: 2147483645 !important; }
 .tmw-slot-machine .slot-btn,
@@ -887,7 +892,7 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   pointer-events: auto !important;
 }
 
-/* All center visuals = decorative; never intercept clicks */
+/* Center visuals are decorative: never intercept clicks */
 .tmw-slot-machine .slot-center,
 .tmw-slot-machine .slot-reels,
 .tmw-slot-machine .tmw-slot-placeholder,
@@ -898,6 +903,9 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
   pointer-events: none !important;
 }
 
-/* Any pseudo overlays must be click-through */
+/* Pseudos must be click-through */
 .tmw-slot-machine .slot-body::before,
-.tmw-slot-machine .slot-body::after { pointer-events: none !important; }
+.tmw-slot-machine .slot-body::after {
+  pointer-events: none !important;
+}
+

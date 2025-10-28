@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: ['class', 'style']
+        attributeFilter: ['class','style']
       });
     }
 
