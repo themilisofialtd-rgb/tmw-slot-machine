@@ -1040,68 +1040,52 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================
-   [TMW-DEBUG] v1.1.6f — HUD + console when ?tmwDebug=1
-   Independent of theme CSS; always visible.
+   [TMW-DEBUG] v1.1.6g — HUD + console when ?tmwDebug=1
    Also reasserts clickability after mutations.
    ========================================================= */
 (function(){
   try{
-    const params=new URLSearchParams(location.search);
-    const debug=params.has('tmwDebug');
     const container=document.querySelector('.tmw-slot-machine');
     if(!container) return;
 
-    // --- Clickability helper (idempotent)
+    // Keep primary controls interactive and on top
     function tmwMakeButtonsClickable(root){
-      const onTop=(el)=>{ if(!el) return; el.style.position='relative'; el.style.zIndex='2147483646'; el.style.pointerEvents='auto'; };
-      onTop(root.querySelector('.slot-btn'));
-      onTop(root.querySelector('.tmw-claim-bonus'));
-      onTop(root.querySelector('#soundToggle, .sound-toggle, .tmw-sound-toggle'));
+      const up=el=>{ if(!el) return; el.style.position='relative'; el.style.zIndex='2147483646'; el.style.pointerEvents='auto'; };
+      up(root.querySelector('.slot-btn'));
+      up(root.querySelector('.tmw-claim-bonus'));
+      up(root.querySelector('.sound-toggle'));
     }
     tmwMakeButtonsClickable(container);
     setTimeout(()=>tmwMakeButtonsClickable(container),1200);
 
-    // --- Deterministic HUD (inline styles so CSS not required)
-    if(debug){
-      document.documentElement.classList.add('tmw-debug');
-      document.body.classList.add('tmw-debug');
-
-      const hud=document.createElement('div');
-      hud.style.cssText='position:absolute;right:8px;top:8px;z-index:2147483647;font:12px/1.35 monospace;background:rgba(0,0,0,.85);color:#e7e7e7;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 10px;max-width:340px;pointer-events:auto';
-      hud.innerHTML='<div style="font-weight:700;margin-bottom:6px">TMW DEBUG</div><div id="tmwLines" style="white-space:pre-wrap"></div><button id="tmwGuard" type="button" style="margin-top:6px">Guard: OFF</button>';
-      container.style.position=container.style.position||'relative';
-      container.appendChild(hud);
-      const lines=hud.querySelector('#tmwLines');
-      const guardBtn=hud.querySelector('#tmwGuard');
-      let guardOn=false;
-      guardBtn.onclick=()=>{guardOn=!guardOn;container.classList.toggle('tmw-guard-on',guardOn);guardBtn.textContent='Guard: '+(guardOn?'ON':'OFF');tick()};
-
-      const log=(...a)=>console.log('[TMW-DEBUG]',...a);
-      function cssPath(el){ if(!el||!el.closest) return '—'; let p=[],c=el; for(let i=0;i<5&&c;i++){let s=c.tagName.toLowerCase(); if(c.id)s+='#'+c.id; if(c.className&&typeof c.className==='string'){const cl=c.className.trim().split(/\s+/).slice(0,2).join('.'); if(cl)s+='.'+cl;} p.unshift(s); c=c.parentElement;} return p.join(' > '); }
-      function topAt(el){
-        if(!el) return 'missing';
-        const r=el.getBoundingClientRect();
-        const x=Math.round(r.left+r.width/2), y=Math.round(r.top+r.height/2);
-        const top=document.elementFromPoint(x,y);
-        const cs=top?getComputedStyle(top):null;
-        if(top && top!==el && !el.contains(top)) top.setAttribute('data-tmw-clickshield','1');
-        log('topAt', el.className||el.id||el.tagName, top, cs?{z:cs.zIndex,pe:cs.pointerEvents,pos:cs.position,tf:cs.transform,op:cs.opacity}:null);
-        return `${cssPath(top)} | z:${cs?cs.zIndex:'-'} pe:${cs?cs.pointerEvents:'-'}`;
-      }
-      function tick(){
-        const spin = topAt(container.querySelector('.slot-btn'));
-        const sound= topAt(container.querySelector('#soundToggle, .sound-toggle, .tmw-sound-toggle'));
-        const claim= topAt(container.querySelector('.tmw-claim-bonus'));
-        lines.textContent=`Spin:  ${spin}
-Sound: ${sound}
-Claim: ${claim}`;
-      }
-      tick(); setTimeout(tick,1200); setInterval(tick,600);
-    }
-
-    // Reassert clickability after any mutation
+    // Observe DOM/style changes inside the slot
     const mo=new MutationObserver(()=>tmwMakeButtonsClickable(container));
     mo.observe(container,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
 
+    // Debug HUD (URL: ?tmwDebug=1)
+    const dbg=new URLSearchParams(location.search).has('tmwDebug');
+    if(!dbg) return;
+
+    const hud=document.createElement('div');
+    hud.style.cssText='position:absolute;right:8px;top:8px;z-index:2147483647;font:12px/1.35 monospace;background:rgba(0,0,0,.85);color:#e7e7e7;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 10px;max-width:340px;pointer-events:auto';
+    hud.innerHTML='<div style="font-weight:700;margin-bottom:6px">TMW DEBUG</div><div id="tmwLines" style="white-space:pre-wrap"></div>';
+    container.style.position=container.style.position||'relative';
+    container.appendChild(hud);
+
+    function path(el){ if(!el||!el.closest) return '—'; let p=[],c=el; for(let i=0;i<5&&c;i++){let s=c.tagName.toLowerCase(); if(c.id) s+='#'+c.id; if(c.className&&typeof c.className==='string'){const cl=c.className.trim().split(/\s+/).slice(0,2).join('.'); if(cl) s+='.'+cl;} p.unshift(s); c=c.parentElement; } return p.join(' > '); }
+    function topAt(sel){
+      const el=container.querySelector(sel); if(!el) return 'missing';
+      const r=el.getBoundingClientRect(); const x=Math.round(r.left+r.width/2), y=Math.round(r.top+r.height/2);
+      const top=document.elementFromPoint(x,y); const cs=top?getComputedStyle(top):null;
+      return `${path(top)} | z:${cs?cs.zIndex:'-'} pe:${cs?cs.pointerEvents:'-'}`;
+    }
+    const lines=hud.querySelector('#tmwLines');
+    function tick(){
+      lines.textContent=`Spin:  ${topAt('.slot-btn')}
+Sound: ${topAt('.sound-toggle')}
+Claim: ${topAt('.tmw-claim-bonus')}`;
+      console.log('[TMW-DEBUG]', lines.textContent.replace(/\n/g,' | '));
+    }
+    tick(); setTimeout(tick,1200); setInterval(tick,600);
   }catch(e){ console.error('[TMW-DEBUG] error',e); }
 })();

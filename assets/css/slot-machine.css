@@ -830,15 +830,11 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 }
 
 /* =========================================================
-   [TMW-SLOT-UI-COLORS] v1.1.6f — SINGLE SOURCE OF TRUTH
+   [TMW-SLOT-UI-COLORS] v1.1.6g — SINGLE SOURCE OF TRUTH
    Spin Now / Spin Again => ORANGE   (#FF7A00 → #FF3C00)
    Claim Your Bonus      => RED      (#E53935 → #B90000)
    ========================================================= */
-.tmw-slot-machine{
-  --tmw-spin-orange:#FF7A00;
-  --tmw-claim-red:#E53935;
-  --tmw-ring-opacity:.45;
-}
+.tmw-slot-machine{ --tmw-spin-orange:#FF7A00; --tmw-claim-red:#E53935; --tmw-ring-opacity:.45; }
 
 /* SPIN (left) — Spin Now + Spin Again */
 .tmw-slot-machine .slot-btn{
@@ -865,24 +861,25 @@ body .tmw-slot-machine *:not(button):not(.slot-btn):not(.tmw-claim-bonus) {
 }
 
 /* =========================================================
-   [TMW-SLOT-CLICK-FIX] v1.1.6f — FINAL GUARD (MUST BE LAST)
-   Only the intended controls capture clicks inside the slot.
+   [TMW-SLOT-CLICK-FIX] v1.1.6g — FINAL GUARD (MUST BE LAST)
+   Only Spin / Claim / Sound capture clicks inside the slot.
+   Works even if center visuals mutate.
    ========================================================= */
 .tmw-slot-machine .slot-body{position:relative}
 
-/* 1) Default EVERYTHING to ignore pointer events */
-.tmw-slot-machine .slot-body *{pointer-events:none!important}
+/* Nuclear default: everything inside the slot ignores clicks */
+.tmw-slot-machine, .tmw-slot-machine *{ pointer-events:none !important; }
 
-/* 2) Explicitly re-enable our controls */
+/* Re-enable intended controls */
 .tmw-slot-machine .slot-btn,
 .tmw-slot-machine .tmw-claim-bonus,
-.tmw-slot-machine .sound-toggle,
-.tmw-slot-machine #soundToggle,
-.tmw-slot-machine .tmw-sound-toggle{
-  pointer-events:auto!important;
-  position:relative;z-index:2147483646!important
+.tmw-slot-machine .sound-toggle{
+  pointer-events:auto !important;
+  position:relative; z-index:2147483646 !important;
 }
 
-/* 3) Pseudo overlays must be click-through */
+/* Pseudos must be click-through */
+.tmw-slot-machine::before,
+.tmw-slot-machine::after,
 .tmw-slot-machine .slot-body::before,
-.tmw-slot-machine .slot-body::after{pointer-events:none!important}
+.tmw-slot-machine .slot-body::after { pointer-events:none !important; }
