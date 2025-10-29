@@ -1,6 +1,7 @@
-if (typeof tmwSlot === 'undefined' || !tmwSlot.assetsUrl) {
-  console.warn('tmwSlot.assetsUrl missing – using fallback path.');
+if (typeof tmwSlot === 'undefined' || !tmwSlot) {
   var tmwSlot = { assetsUrl: '/wp-content/plugins/tmw-slot-machine/assets' };
+} else if (!tmwSlot.assetsUrl) {
+  tmwSlot.assetsUrl = '/wp-content/plugins/tmw-slot-machine/assets';
 }
 
 const SLOT_BUTTON_ID = 'tmw-slot-btn';
@@ -446,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return parsed.filter(offer => offer && offer.title && offer.url);
           }
         } catch (error) {
-          console.error('TMW Slot Machine: invalid offers data', error);
+          // Ignore malformed JSON payloads.
         }
       }
 
