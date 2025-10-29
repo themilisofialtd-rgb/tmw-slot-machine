@@ -230,20 +230,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let hasCompletedSpin = false;
     let currentButtonState = BUTTON_STATES.SPIN;
 
-    const validateAndLogState = (state, { disabled } = {}) => {
-      if (!container) {
-        return;
-      }
-
-      cleanupSlotButtons(container);
-      const localSlotContainer = container.querySelector('.slot-container') || slotContainer;
-      const buttonCount = localSlotContainer
-        ? localSlotContainer.querySelectorAll(`.${SLOT_BUTTON_CLASS}`).length
-        : 0;
-      const diagnostic = `${state}|buttons=${buttonCount}|disabled=${disabled ? '1' : '0'}|valid=${buttonCount === 1 ? 'ok' : 'dup'}`;
-      logSlotState(diagnostic);
-    };
-
     function updateButtonState(state, options = {}) {
       const { disabled = false, focus = false } = options;
 
@@ -290,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
         slotBtn.focus();
       }
 
-      validateAndLogState(state, { disabled });
       cleanupSlotButtons(container);
     }
 
@@ -790,7 +775,6 @@ document.addEventListener('DOMContentLoaded', function() {
       renderRightClaim('');
       slotBtn.disabled = true;
       slotBtn.classList.add('is-busy');
-      validateAndLogState(currentButtonState, { disabled: true });
       resetForSpin();
       stopWinSound();
       setRandomIconsOnReels(reelList);
@@ -1004,20 +988,6 @@ const setRandomIconsOnReels = reels => {
   });
 };
 
-function logSlotState(label) {
-  if (typeof fetch !== 'function') {
-    return;
-  }
-
-  const stateLabel = typeof label === 'string' && label ? label : 'unknown';
-
-  fetch('/wp-admin/admin-ajax.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `action=tmw_slot_log&state=${encodeURIComponent(stateLabel)}`
-  }).catch(() => {});
-}
-
 // Preload icons to prevent empty reels on first spin
 (function preloadTmwIcons() {
   const iconsToPreload = getIconPool();
@@ -1028,9 +998,6 @@ function logSlotState(label) {
       img.src = url;
     }
   });
-  if (iconsToPreload.length) {
-    console.log('[TMW Slot Machine] Icons preloaded:', iconsToPreload.join(', '));
-  }
 })();
 
 // Apply random icons on load for fallback contexts
@@ -1039,53 +1006,3 @@ document.addEventListener('DOMContentLoaded', () => {
   setRandomIconsOnReels(reels);
 });
 
-/* =========================================================
-   [TMW-DEBUG] v1.1.6g — HUD + console when ?tmwDebug=1
-   Also reasserts clickability after mutations.
-   ========================================================= */
-(function(){
-  try{
-    const container=document.querySelector('.tmw-slot-machine');
-    if(!container) return;
-
-    // Keep primary controls interactive and on top
-    function tmwMakeButtonsClickable(root){
-      const up=el=>{ if(!el) return; el.style.position='relative'; el.style.zIndex='2147483646'; el.style.pointerEvents='auto'; };
-      up(root.querySelector('.slot-btn'));
-      up(root.querySelector('.tmw-claim-bonus'));
-      up(root.querySelector('.sound-toggle'));
-    }
-    tmwMakeButtonsClickable(container);
-    setTimeout(()=>tmwMakeButtonsClickable(container),1200);
-
-    // Observe DOM/style changes inside the slot
-    const mo=new MutationObserver(()=>tmwMakeButtonsClickable(container));
-    mo.observe(container,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
-
-    // Debug HUD (URL: ?tmwDebug=1)
-    const dbg=new URLSearchParams(location.search).has('tmwDebug');
-    if(!dbg) return;
-
-    const hud=document.createElement('div');
-    hud.style.cssText='position:absolute;right:8px;top:8px;z-index:2147483647;font:12px/1.35 monospace;background:rgba(0,0,0,.85);color:#e7e7e7;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 10px;max-width:340px;pointer-events:auto';
-    hud.innerHTML='<div style="font-weight:700;margin-bottom:6px">TMW DEBUG</div><div id="tmwLines" style="white-space:pre-wrap"></div>';
-    container.style.position=container.style.position||'relative';
-    container.appendChild(hud);
-
-    function path(el){ if(!el||!el.closest) return '—'; let p=[],c=el; for(let i=0;i<5&&c;i++){let s=c.tagName.toLowerCase(); if(c.id) s+='#'+c.id; if(c.className&&typeof c.className==='string'){const cl=c.className.trim().split(/\s+/).slice(0,2).join('.'); if(cl) s+='.'+cl;} p.unshift(s); c=c.parentElement; } return p.join(' > '); }
-    function topAt(sel){
-      const el=container.querySelector(sel); if(!el) return 'missing';
-      const r=el.getBoundingClientRect(); const x=Math.round(r.left+r.width/2), y=Math.round(r.top+r.height/2);
-      const top=document.elementFromPoint(x,y); const cs=top?getComputedStyle(top):null;
-      return `${path(top)} | z:${cs?cs.zIndex:'-'} pe:${cs?cs.pointerEvents:'-'}`;
-    }
-    const lines=hud.querySelector('#tmwLines');
-    function tick(){
-      lines.textContent=`Spin:  ${topAt('.slot-btn')}
-Sound: ${topAt('.sound-toggle')}
-Claim: ${topAt('.tmw-claim-bonus')}`;
-      console.log('[TMW-DEBUG]', lines.textContent.replace(/\n/g,' | '));
-    }
-    tick(); setTimeout(tick,1200); setInterval(tick,600);
-  }catch(e){ console.error('[TMW-DEBUG] error',e); }
-})();
